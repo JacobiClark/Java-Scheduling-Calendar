@@ -3,10 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package daodemo.view_controller;
+package view_controller;
 
-import daodemo.DAO.UserDaoImpl;
-import daodemo.model.User;
+import model.User;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -48,16 +47,6 @@ public class DAOPatternDemoController implements Initializable {
        Password.setCellValueFactory(new PropertyValueFactory<>("password"));
        
 
-        try {
-            Users.addAll(UserDaoImpl.getAllUsers());
-            
-  
-        } catch (Exception ex) {
-            Logger.getLogger(DAOPatternDemoController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-                    UserTable.setItems(Users);
-                    //Using Lambda for efficient selection off a tableview
-     
-    }    
+    }
     
 }
