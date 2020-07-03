@@ -33,7 +33,7 @@ public class User {
         this.lastUpdate = lastUpdate;
         this.lastUpdateBy = lastUpdateBy;
     }
-
+    
     public int getUserId() {
         return userId;
     }

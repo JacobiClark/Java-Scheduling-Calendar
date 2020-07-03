@@ -29,10 +29,8 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/view_controller/LogIn.fxml"));
-        
-        Scene scene = new Scene(root);
-        
-        stage.setScene(scene);
+        Scene LogInScene = new Scene(root);
+        stage.setScene(LogInScene);
         stage.show();
     }
 
@@ -40,29 +38,6 @@ public class Main extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws SQLException {
-        /*Connection conn = DBConnection.startConnection();
-        Query.setStatement(conn);
-        Statement statement = Query.getStatement();
-        Scanner keyboard = new Scanner(System.in);
-        System.out.print("Please enter a country: ");
-        String country = keyboard.nextLine();
-        
-        String selectStatement = "SELECT * FROM country WHERE " + country;
-        
-        try{
-            statement.execute(selectStatement);
-            ResultSet rs = statement.getResultSet();
-            while(rs.next()){
-                int countryID = rs.getInt("countryID");
-                String countryName = rs.getString("country");
-                System.out.println(countryID + "  |  " + countryName);
-            }
-        }
-        catch(Exception e){
-           System.out.println(e.getMessage());
-        }*/
-        
-
         launch(args);
         DBConnection.closeConnection();
     }
