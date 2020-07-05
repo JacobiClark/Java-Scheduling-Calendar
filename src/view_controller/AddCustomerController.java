@@ -6,15 +6,23 @@
 package view_controller;
 
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+import utils.DBConnection;
+import utils.Query;
 
 /**
  * FXML Controller class
@@ -24,41 +32,19 @@ import javafx.scene.control.TextField;
 public class AddCustomerController implements Initializable {
 
     @FXML
-    private TextField nameField;
+    private Button AddCustomerCancelButton;
     @FXML
-    private TextField address1Field;
+    private Button addCustomerSaveButton;
     @FXML
-    private TextField address2Field;
+    private TextField CustomerName;
     @FXML
-    private TextField zipField;
+    private TextField City;
     @FXML
-    private TextField phoneField;
+    private TextField Zip;
     @FXML
-    private ComboBox<?> cityComboBox;
+    private TextField PhoneNumber;
     @FXML
-    private TableView<?> customersTableView;
-    @FXML
-    private TableColumn<?, ?> custIDCol;
-    @FXML
-    private TableColumn<?, ?> custNameCol;
-    @FXML
-    private TableColumn<?, ?> custAddress1Col;
-    @FXML
-    private TableColumn<?, ?> custAddress2Col;
-    @FXML
-    private TableColumn<?, ?> custCityCol;
-    @FXML
-    private TableColumn<?, ?> custCountryCol;
-    @FXML
-    private TableColumn<?, ?> custZipCol;
-    @FXML
-    private TableColumn<?, ?> custPhoneCol;
-    @FXML
-    private Button clearButton;
-    @FXML
-    private Button addButton;
-    @FXML
-    private Button returnButton;
+    private TextField Address;
 
     /**
      * Initializes the controller class.
@@ -69,15 +55,50 @@ public class AddCustomerController implements Initializable {
     }    
 
     @FXML
-    private void handleClearButton(ActionEvent event) {
+    private void addCustomerCancelButtonPressed(ActionEvent event) {
+
     }
 
     @FXML
-    private void handleAddButton(ActionEvent event) {
-    }
+    private void addCustomerSaveButtonPressed(ActionEvent event) throws SQLException {
+        String customerName = CustomerName.getText();
+        String addressId = getAddressIdfromDB(Address.getText());
+        System.out.println(addressId);
+        String phone = PhoneNumber.getText();
+        try {
+            Connection conn = DBConnection.startConnection();
+            String insertStatement = "INSERT INTO customer (customerName, addressId, phone) VALUES (?,?,?)";
+            Query.setPreparedStatement(conn, insertStatement);
+            PreparedStatement ps = Query.getPreparedStatement();
+            ps.setString(1, customerName);
+            ps.setString(2, addressId);
+            ps.setString(3, phone);
+            ps.execute();
+        }
 
-    @FXML
-    private void handleReturnButton(ActionEvent event) {
+       catch (SQLException e) {
+            System.out.println(e.getMessage() + "unable to add customer" );
+        }
+    }
+    
+    public String getAddressIdfromDB(String address) throws SQLException {
+        Connection conn = DBConnection.startConnection();
+        String selectStatement = "SELECT addressId FROM address WHERE address = ?";
+        Query.setPreparedStatement(conn, selectStatement);
+        PreparedStatement ps = Query.getPreparedStatement();
+        ps.setString(1, address);
+        ps.execute();
+        String Address = null;
+        ResultSet rs = ps.getResultSet();
+        try {
+            if (rs.next()) {
+                Address = rs.getString("addressId");
+            }
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage() + "unable to get customer id" );
+        }
+        return Address;
     }
     
 }

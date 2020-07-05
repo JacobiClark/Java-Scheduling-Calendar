@@ -99,7 +99,7 @@ public class MainController implements Initializable {
         this.WeekViewRB.setToggleGroup(viewSelector);
         this.MonthViewRB.setToggleGroup(viewSelector);
     }    
-    private void populateAppointmentsTable(LocalDateTime endTime) throws SQLException{
+    private void getAppointmentsfromDB(LocalDateTime endTime) throws SQLException{
         loggedInUsersAppointments.clear();
         try {
             Connection conn = DBConnection.startConnection();
@@ -170,7 +170,14 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    private void CustomerManagementButtonPressed(ActionEvent event) {
+    private void CustomerManagementButtonPressed(ActionEvent event) throws IOException, SQLException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CustomerManagement.fxml"));
+        Parent     root       = (Parent) fxmlLoader.load();
+        Stage      stage      = new Stage();
+        stage.setTitle("Customer Management");
+        stage.setScene(new Scene(root));
+        stage.show();
+
     }
     @FXML
     private void viewCustomerButtonPressed(ActionEvent event) {
@@ -180,7 +187,7 @@ public class MainController implements Initializable {
         try {
             loggedInUser = user;
             AppointmentGreeter.setText("Welcome, " + loggedInUser.getUserName() + "!");
-            populateAppointmentsTable(oneMonth);
+            getAppointmentsfromDB(oneMonth);
             this.MonthViewRB.setSelected(true);
 
             //populateAppointmentsTable();
@@ -192,12 +199,12 @@ public class MainController implements Initializable {
     }
     
     public void WeekViewRBPressed(ActionEvent event) throws SQLException {
-        populateAppointmentsTable(oneWeek);  
+        getAppointmentsfromDB(oneWeek);  
         appointmentTimeFrameDescriptor.setText("Weekly Appointments");
     }
     
     public void MonthViewRBPressed(ActionEvent event) throws SQLException {
-        populateAppointmentsTable(oneMonth);
+        getAppointmentsfromDB(oneMonth);
         appointmentTimeFrameDescriptor.setText("Monthly Appointments");
     }
     

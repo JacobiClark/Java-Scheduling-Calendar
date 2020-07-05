@@ -11,7 +11,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -20,15 +19,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 import model.User;
 import utils.DBConnection;
@@ -43,42 +38,31 @@ public class AddAppointmentController implements Initializable {
     Integer userId;
 
     @FXML
+    private Button AddAppointmentCancelButton;
+    @FXML
+    private Button AddAppointmentSaveButton;
+    @FXML
     private TextField CustomerName;
+    @FXML
     private TextField StartTime;
-    private TextField MeetingType;
+    @FXML
     private TextField EndTime;
     @FXML
-    private Button AddCustomerCancelButton;
-    @FXML
-    private Button addCustomerSaveButton;
-    @FXML
-    private TextField City;
-    @FXML
-    private TextField Zip;
-    @FXML
-    private TextField PhoneNumber;
-    @FXML
-    private TextField Address;
-
+    private TextField MeetingType;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // TODO
+    }    
 
-    }   
+    @FXML
     private void addAppointmentSaveButtonPressed(ActionEvent event) throws SQLException, IOException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        /*this.appointmentID = appointmentID;
-        this.customerId = customerId;
-        this.userId = userId;
-        this.startTime = LocalDateTime.parse(startTime, formatter);
-        this.endTime = LocalDateTime.parse(endTime, formatter);
-        this.meetingType = meetingType;
-        this.customerName = customerName;*/
         String customerName = CustomerName.getText();
-        int customerId = getAppointmentCustomerId(customerName);
+        int customerId = getCustomerIdfromDB(customerName);
         LocalDateTime startTime = LocalDateTime.parse(StartTime.getText(), formatter);
         LocalDateTime endTime = LocalDateTime.parse(EndTime.getText(), formatter);
         String meetingType = MeetingType.getText();
@@ -108,7 +92,7 @@ public class AddAppointmentController implements Initializable {
         }
     }
 
-    private void addAppointmentCancelButtonPressed(ActionEvent event) {
+    public void addAppointmentCancelButtonPressed(ActionEvent event) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Cancel Add Appointment");
         alert.setContentText("Are you sure you want to cancel adding this Appointment?");
@@ -119,7 +103,7 @@ public class AddAppointmentController implements Initializable {
     }
 
     
-    public int getAppointmentCustomerId(String customerName) throws SQLException {
+    public int getCustomerIdfromDB(String customerName) throws SQLException {
         Connection conn = DBConnection.startConnection();
         String selectStatement = "SELECT * FROM customer WHERE customerName = ?";
         Query.setPreparedStatement(conn, selectStatement);
@@ -142,14 +126,6 @@ public class AddAppointmentController implements Initializable {
     
     public void setUserId(User user) {
         userId = user.getUserId();
-    }
-
-    @FXML
-    private void addCustomerCancelButtonPressed(ActionEvent event) {
-    }
-
-    @FXML
-    private void addCustomerSaveButtonPressed(ActionEvent event) {
     }
     
 }
