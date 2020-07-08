@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +25,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -34,7 +37,6 @@ import model.Appointment;
 import model.Customer;
 import utils.DBConnection;
 import utils.Query;
-import static view_controller.MainController.loggedInUsersAppointments;
 
 /**
  * FXML Controller class
@@ -70,7 +72,8 @@ public class CustomerManagementController implements Initializable {
     @FXML
     private Button BackToCalendarButton;
     
-    public void populateCustomersTable() {
+    public void populateCustomersTable() throws SQLException {
+        customers = SQL.SQLQuery.retrieveCustomers();
         // Initialize product table columns
         NameColumn.setCellValueFactory(new PropertyValueFactory<Customer, String>("customerName"));
         PhoneNumberColumn.setCellValueFactory(new PropertyValueFactory<Customer, String>("phone"));
@@ -87,43 +90,27 @@ public class CustomerManagementController implements Initializable {
      */
     public void initialize(URL url, ResourceBundle rb) {
         try {
-            getCustomersFromDB();
-        } catch (SQLException ex) {
-            Logger.getLogger(CustomerManagementController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        populateCustomersTable();
-        
-    }
-    
-    public void getCustomersFromDB() throws SQLException{
-        customers.clear();
-        try {
-            Connection conn = DBConnection.startConnection();
-            String selectStatement = "SELECT customerId, customerName, phone, address, city, postalCode, country FROM customer INNER JOIN address ON customer.addressId = address.addressId INNER JOIN city ON address.cityId = city.cityId INNER JOIN country on city.countryId = country.countryId";
-            Query.setPreparedStatement(conn, selectStatement);
-            PreparedStatement ps = Query.getPreparedStatement();
-            ps.execute();        
-            ResultSet rs = ps.getResultSet();
-            while (rs.next()) {
-                Customer customer  = new Customer(
-                    rs.getString("customerId"),
-                    rs.getString("customerName"),
-                    rs.getString("phone"),
-                    rs.getString("address"),
-                    rs.getString("city"),
-                    rs.getString("postalCode"),
-                    rs.getString("country")
-                );
-                customers.add(customer);
-            }
+            populateCustomersTable();
         }
         catch (SQLException e) {
-            System.out.println("failed to create appointment" );
+            System.out.println(e.getMessage() + " unable to populate customers table" );
         }
+        
     }
 
     @FXML
-    private void DeleteCustomerButtonPressed(ActionEvent event) {
+    public void DeleteCustomerButtonPressed(ActionEvent event) throws SQLException {
+        Customer selectedCustomer = CustomersTable.getSelectionModel().getSelectedItem();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete selected Product");
+        alert.setHeaderText("Are you sure you want to delete?");
+        alert.setContentText("Are you sure you want to delete this product?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            System.out.println(selectedCustomer.getCustomerId());
+            SQL.SQLQuery.deleteCustomer(selectedCustomer.getCustomerId());
+            populateCustomersTable();
+        }
     }
 
     @FXML
@@ -142,6 +129,7 @@ public class CustomerManagementController implements Initializable {
 
     @FXML
     private void BackToCalendarButtonPressed(ActionEvent event) {
+        ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
     }
     
 }

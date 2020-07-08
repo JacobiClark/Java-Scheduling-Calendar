@@ -5,6 +5,7 @@
  */
 package view_controller;
 
+import SQL.SQLQuery;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,6 +31,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
@@ -47,9 +50,8 @@ import utils.Query;
  * @author Jacobi
  */
 public class MainController implements Initializable {
-    public static ObservableList<Appointment>loggedInUsersAppointments= FXCollections.observableArrayList();
     private User loggedInUser;
-    LocalDateTime now = LocalDateTime.now().minusYears(222);
+    ObservableList<Appointment> loggedInUsersAppointments = FXCollections.observableArrayList();
     LocalDateTime oneWeek = LocalDateTime.now().plusWeeks(1);
     LocalDateTime oneMonth = LocalDateTime.now().plusMonths(1);
 
@@ -99,45 +101,29 @@ public class MainController implements Initializable {
         this.WeekViewRB.setToggleGroup(viewSelector);
         this.MonthViewRB.setToggleGroup(viewSelector);
     }    
-    private void getAppointmentsfromDB(LocalDateTime endTime) throws SQLException{
-        loggedInUsersAppointments.clear();
-        try {
-            Connection conn = DBConnection.startConnection();
-            String selectStatement = "SELECT * FROM user JOIN appointment ON user.userId = appointment.userId INNER JOIN customer ON appointment.customerId = customer.customerId WHERE user.userId=? AND appointment.end between ? and ?";
-            Query.setPreparedStatement(conn, selectStatement);
-            PreparedStatement ps = Query.getPreparedStatement();
-            int userId = loggedInUser.getUserId();
-            //key-value mapping
-            ps.setInt(1, userId);
-            ps.setTimestamp(2, Timestamp.valueOf(now));
-            ps.setTimestamp(3, Timestamp.valueOf(endTime));
-            ps.execute();        
-            ResultSet rs = ps.getResultSet();
-            while (rs.next()) {
-                Appointment appointment  = new Appointment(
-                    rs.getInt("appointmentId"),
-                    rs.getInt("customerId"),
-                    rs.getInt("userId"),
-                    rs.getString("start"),
-                    rs.getString("end"),
-                    rs.getString("type"),
-                    rs.getString("customerName")                    
-                );
-                System.out.println(appointment.getStartTime());
-                loggedInUsersAppointments.add(appointment);
-            }
+
+    public void DeleteAppointmentButtonPressed(ActionEvent event) throws SQLException {
+        Appointment selectedAppointment = AppointmentsTable.getSelectionModel().getSelectedItem();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete selected Product");
+        alert.setHeaderText("Are you sure you want to delete?");
+        alert.setContentText("Are you sure you want to delete this product?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            SQL.SQLQuery.deleteAppointment(selectedAppointment.getAppointmentID());
+            populateAppointmentsTable();
         }
-        catch (SQLException e) {
-            System.out.println("failed to create appointment" );
-        }
-        populateAppointmentsTable();
-    }
-    private void DeleteAppointmentButtonPressed(Integer inte) {
-        System.out.println(inte);
     }
 
-    public void populateAppointmentsTable() {
+    public void populateAppointmentsTable() throws SQLException {
         // Initialize product table columns
+        if (this.WeekViewRB.isSelected()) {
+            loggedInUsersAppointments = SQLQuery.retrieveAppointments(oneWeek, loggedInUser);
+        }
+        if (this.MonthViewRB.isSelected()) {
+            loggedInUsersAppointments = SQLQuery.retrieveAppointments(oneWeek, loggedInUser);
+        }
+
         DateColumn.setCellValueFactory(new PropertyValueFactory<Appointment, LocalDate>("date"));
         TimeColumn.setCellValueFactory(new PropertyValueFactory<Appointment, LocalDateTime>("startTime"));
         EndTimeColumn.setCellValueFactory(new PropertyValueFactory<Appointment, LocalDateTime>("endTime"));
@@ -146,11 +132,6 @@ public class MainController implements Initializable {
 
         // Load in Parts
         AppointmentsTable.setItems(loggedInUsersAppointments);
-    }
-
-
-    @FXML
-    private void DeleteAppointmentButtonPressed(ActionEvent event) {
     }
 
     @FXML
@@ -179,18 +160,14 @@ public class MainController implements Initializable {
         stage.show();
 
     }
-    @FXML
-    private void viewCustomerButtonPressed(ActionEvent event) {
-    
-    }
+
     public void setLoggedInUser(User user) throws SQLException {
         try {
             loggedInUser = user;
             AppointmentGreeter.setText("Welcome, " + loggedInUser.getUserName() + "!");
-            getAppointmentsfromDB(oneMonth);
+            loggedInUsersAppointments = SQLQuery.retrieveAppointments(oneMonth, loggedInUser);
             this.MonthViewRB.setSelected(true);
-
-            //populateAppointmentsTable();
+            populateAppointmentsTable();
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
@@ -199,13 +176,11 @@ public class MainController implements Initializable {
     }
     
     public void WeekViewRBPressed(ActionEvent event) throws SQLException {
-        getAppointmentsfromDB(oneWeek);  
-        appointmentTimeFrameDescriptor.setText("Weekly Appointments");
+        this.WeekViewRB.setSelected(true);
     }
     
     public void MonthViewRBPressed(ActionEvent event) throws SQLException {
-        getAppointmentsfromDB(oneMonth);
-        appointmentTimeFrameDescriptor.setText("Monthly Appointments");
+        this.MonthViewRB.setSelected(true);
     }
     
 }

@@ -38,10 +38,6 @@ public class AddCustomerController implements Initializable {
     @FXML
     private TextField CustomerName;
     @FXML
-    private TextField City;
-    @FXML
-    private TextField Zip;
-    @FXML
     private TextField PhoneNumber;
     @FXML
     private TextField Address;
@@ -62,43 +58,13 @@ public class AddCustomerController implements Initializable {
     @FXML
     private void addCustomerSaveButtonPressed(ActionEvent event) throws SQLException {
         String customerName = CustomerName.getText();
-        String addressId = getAddressIdfromDB(Address.getText());
-        System.out.println(addressId);
         String phone = PhoneNumber.getText();
-        try {
-            Connection conn = DBConnection.startConnection();
-            String insertStatement = "INSERT INTO customer (customerName, addressId, phone) VALUES (?,?,?)";
-            Query.setPreparedStatement(conn, insertStatement);
-            PreparedStatement ps = Query.getPreparedStatement();
-            ps.setString(1, customerName);
-            ps.setString(2, addressId);
-            ps.setString(3, phone);
-            ps.execute();
-        }
+        String address = Address.getText();
+        SQL.SQLQuery.insertAddress(phone, address);
+        String addressId = SQL.SQLQuery.retrieveAddressId(address,phone);
+        //Insert new address and generate addrssId Primary key
+        SQL.SQLQuery.insertCustomer(customerName, addressId);
+    }
 
-       catch (SQLException e) {
-            System.out.println(e.getMessage() + "unable to add customer" );
-        }
-    }
-    
-    public String getAddressIdfromDB(String address) throws SQLException {
-        Connection conn = DBConnection.startConnection();
-        String selectStatement = "SELECT addressId FROM address WHERE address = ?";
-        Query.setPreparedStatement(conn, selectStatement);
-        PreparedStatement ps = Query.getPreparedStatement();
-        ps.setString(1, address);
-        ps.execute();
-        String Address = null;
-        ResultSet rs = ps.getResultSet();
-        try {
-            if (rs.next()) {
-                Address = rs.getString("addressId");
-            }
-        }
-        catch (SQLException e) {
-            System.out.println(e.getMessage() + "unable to get customer id" );
-        }
-        return Address;
-    }
     
 }

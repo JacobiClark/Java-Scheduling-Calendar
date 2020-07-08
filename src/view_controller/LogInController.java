@@ -5,6 +5,7 @@
  */
 package view_controller;
 
+import SQL.SQLQuery;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -49,7 +50,7 @@ public class LogInController implements Initializable {
     private TextField passwordField;
     @FXML
     private Button logInButton;
-    String invalidCredentialsHeaderText = "Input not valid";
+    String invalidCredentialsHeaderText = "Authentication failure";
     String invalidCredentialsContentText = "Incorrect Username or Password";
     Locale locale = Locale.getDefault();
     String systemLanguage = locale.getDisplayLanguage();
@@ -66,26 +67,9 @@ public class LogInController implements Initializable {
         String selectStatement = "SELECT * FROM user WHERE userName='" + userName + "' AND password='" + password + "'"; 
         statement.execute(selectStatement);
         ResultSet rs = statement.getResultSet();*/
-        try {
-            Connection conn = DBConnection.startConnection();
-            String selectStatement = "SELECT * FROM user WHERE userName = ? AND password = ?";
-            Query.setPreparedStatement(conn, selectStatement);
-            PreparedStatement ps = Query.getPreparedStatement();
-            ps.setString(1, userName);
-            ps.setString(2, password);
-            ps.execute();        
-            ResultSet rs = ps.getResultSet();
-            rs.next();
-            User loggedInUser = new User(
-                rs.getInt("userId"),
-                rs.getString("userName"),
-                rs.getString("password"),
-                rs.getBoolean("active"),
-                rs.getTimestamp("createDate").toLocalDateTime(),
-                rs.getString("createdBy"),
-                rs.getTimestamp("lastUpdate").toLocalDateTime(),
-                rs.getString("lastUpdateBy")
-                );
+        if (SQLQuery.authenticate(userName, password)) {
+            // Do successful authentication handling
+            User loggedInUser = SQLQuery.createUser(userName);
             try {
                 ((Node) (event.getSource())).getScene().getWindow().hide();
                 FXMLLoader loader=new FXMLLoader(getClass().getResource("Main.fxml"));
@@ -95,16 +79,17 @@ public class LogInController implements Initializable {
                 Stage stage=new Stage();
                 stage.setScene(new Scene(root));
                 stage.show();
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        catch (Exception e) {
+        } else {
             Alert errorAlert = new Alert(AlertType.ERROR);
             errorAlert.setHeaderText(invalidCredentialsHeaderText);
             errorAlert.setContentText(invalidCredentialsContentText);
             errorAlert.showAndWait();
         }
+
     }
 
     public void autoLogIn() {

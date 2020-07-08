@@ -1,10 +1,11 @@
-/*
+ /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 package view_controller;
 
+import SQL.SQLQuery;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -60,36 +61,21 @@ public class AddAppointmentController implements Initializable {
 
     @FXML
     private void addAppointmentSaveButtonPressed(ActionEvent event) throws SQLException, IOException {
+        //Generate data to insert into db
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String customerName = CustomerName.getText();
-        int customerId = getCustomerIdfromDB(customerName);
+        int customerId = SQLQuery.retrieveCustomerId(customerName);
         LocalDateTime startTime = LocalDateTime.parse(StartTime.getText(), formatter);
         LocalDateTime endTime = LocalDateTime.parse(EndTime.getText(), formatter);
         String meetingType = MeetingType.getText();
-
-        try {
-            Connection conn = DBConnection.startConnection();
-            String insertStatement = "INSERT INTO appointment (customerId, userId, type, start, end) VALUES (?,?,?,?,?)";
-            Query.setPreparedStatement(conn, insertStatement);
-            PreparedStatement ps = Query.getPreparedStatement();
-            ps.setInt(1, customerId);
-            ps.setInt(2, userId);
-            ps.setString(3, meetingType);
-            ps.setString(4, startTime.toString());
-            ps.setString(5, endTime.toString());
-            ps.execute();
-            FXMLLoader loader=new FXMLLoader(getClass().getResource("Main.fxml"));
-            Parent root = (Parent) loader.load();
-            MainController mainController=loader.getController();
-            mainController.populateAppointmentsTable();
-            ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
-            
-
-        }
-
-       catch (SQLException e) {
-            System.out.println(e.getMessage() + "unable to add appointment" );
-        }
+        //Insert appointment into db
+        SQLQuery.insertAppointment(customerId,userId,meetingType,startTime,endTime);
+        //close add appointment screen and go back to main
+        FXMLLoader loader=new FXMLLoader(getClass().getResource("Main.fxml"));
+        Parent root = (Parent) loader.load();
+        MainController mainController=loader.getController();
+        mainController.populateAppointmentsTable();
+        ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
     }
 
     public void addAppointmentCancelButtonPressed(ActionEvent event) {
@@ -102,27 +88,6 @@ public class AddAppointmentController implements Initializable {
         }
     }
 
-    
-    public int getCustomerIdfromDB(String customerName) throws SQLException {
-        Connection conn = DBConnection.startConnection();
-        String selectStatement = "SELECT * FROM customer WHERE customerName = ?";
-        Query.setPreparedStatement(conn, selectStatement);
-        PreparedStatement ps = Query.getPreparedStatement();
-        //key-value mapping
-        ps.setString(1, customerName);
-        ps.execute();
-        int ID = 0;
-        ResultSet rs = ps.getResultSet();
-        try {
-            if (rs.next()) {
-                ID = rs.getInt("customerId");
-            }
-        }
-        catch (SQLException e) {
-            System.out.println(e.getMessage() + "unable to get customer id" );
-        }
-        return ID;
-    }
     
     public void setUserId(User user) {
         userId = user.getUserId();

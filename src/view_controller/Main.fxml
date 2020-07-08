@@ -49,11 +49,6 @@
             <Font size="14.0" />
          </font>
       </Button>
-      <Button id="productsSearchButton" fx:id="ViewCustomerButton" layoutX="276.0" layoutY="690.0" maxWidth="157.0" minWidth="70.0" mnemonicParsing="false" onAction="#viewCustomerButtonPressed" prefHeight="30.0" prefWidth="157.0" text="View Customer">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Button>
       <RadioButton fx:id="WeekViewRB" layoutX="823.0" layoutY="31.0" mnemonicParsing="false" onAction="#WeekViewRBPressed" text="Week View">
          <font>
             <Font size="16.0" />
