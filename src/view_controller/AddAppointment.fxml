@@ -53,7 +53,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="StartTime" maxWidth="160.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" promptText="YYYY-MM-DD HH:MM:SS" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <TextField fx:id="StartTime" maxWidth="160.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" promptText="YYYY-MM-DD HH:MM" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <font>
                   <Font size="14.0" />
                </font>
@@ -63,7 +63,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="EndTime" maxWidth="160.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" promptText="YYYY-MM-DD HH:MM:SS" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <TextField fx:id="EndTime" maxWidth="160.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" promptText="YYYY-MM-DD HH:MM" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <font>
                   <Font size="14.0" />
                </font>

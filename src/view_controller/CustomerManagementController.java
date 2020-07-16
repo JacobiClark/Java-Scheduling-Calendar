@@ -23,6 +23,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -114,17 +115,32 @@ public class CustomerManagementController implements Initializable {
     }
 
     @FXML
-    private void ModifyCustomerButtonPressed(ActionEvent event) {
+    private void ModifyCustomerButtonPressed(ActionEvent event) throws IOException {
+        Customer selectedCustomer = CustomersTable.getSelectionModel().getSelectedItem();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("ModifyCustomer.fxml"));
+        Parent     root       = (Parent) loader.load();
+        Stage      stage      = new Stage();
+        stage.setTitle("Modify Customer");
+        stage.setScene(new Scene(root));
+        stage.show();
+        ModifyCustomerController modifyCustomerController=loader.getController();
+        modifyCustomerController.setCustomerToBeModified(selectedCustomer);
     }
 
     @FXML
     private void AddCustomerButtonPressed(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("AddCustomer.fxml"));
-        Parent     root       = (Parent) fxmlLoader.load();
-        Stage      stage      = new Stage();
-        stage.setTitle("Add Customer");
-        stage.setScene(new Scene(root));
-        stage.show();
+        try {
+            ((Node) (event.getSource())).getScene().getWindow().hide();
+            FXMLLoader loader=new FXMLLoader(getClass().getResource("AddCustomer.fxml"));
+            Parent root = (Parent) loader.load();
+            Stage stage=new Stage();
+            stage.setTitle("Add Customer");
+            stage.setScene(new Scene(root));
+            stage.show();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

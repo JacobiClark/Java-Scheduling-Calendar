@@ -20,6 +20,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -52,14 +54,11 @@ import utils.Query;
 public class MainController implements Initializable {
     private User loggedInUser;
     ObservableList<Appointment> loggedInUsersAppointments = FXCollections.observableArrayList();
-    LocalDateTime oneWeek = LocalDateTime.now().plusWeeks(1);
-    LocalDateTime oneMonth = LocalDateTime.now().plusMonths(1);
-
     
     @FXML
     private TableView<Appointment> AppointmentsTable;
     @FXML
-    private TableColumn<Appointment, LocalDate> DateColumn;
+    private TableColumn<Appointment, String> DateColumn;
     @FXML
     private TableColumn<Appointment, LocalDateTime> TimeColumn;
     @FXML
@@ -98,8 +97,15 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         viewSelector = new ToggleGroup();
-        this.WeekViewRB.setToggleGroup(viewSelector);
-        this.MonthViewRB.setToggleGroup(viewSelector);
+        WeekViewRB.setToggleGroup(viewSelector);
+        MonthViewRB.setToggleGroup(viewSelector);
+        try {
+            populateAppointmentsTable();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
     }    
 
     public void DeleteAppointmentButtonPressed(ActionEvent event) throws SQLException {
@@ -116,38 +122,67 @@ public class MainController implements Initializable {
     }
 
     public void populateAppointmentsTable() throws SQLException {
+        ObservableList<Appointment> appointmentsToBePopulated = FXCollections.observableArrayList();
         // Initialize product table columns
-        if (this.WeekViewRB.isSelected()) {
-            loggedInUsersAppointments = SQLQuery.retrieveAppointments(oneWeek, loggedInUser);
+        if (WeekViewRB.isSelected()) {
+            appointmentsToBePopulated = SQLQuery.retrieveAppointments(LocalDateTime.now().plusWeeks(1), loggedInUser);
         }
-        if (this.MonthViewRB.isSelected()) {
-            loggedInUsersAppointments = SQLQuery.retrieveAppointments(oneWeek, loggedInUser);
+        if (MonthViewRB.isSelected()) {
+            appointmentsToBePopulated = SQLQuery.retrieveAppointments(LocalDateTime.now().plusMonths(1), loggedInUser);
         }
-
-        DateColumn.setCellValueFactory(new PropertyValueFactory<Appointment, LocalDate>("date"));
+        
+        DateColumn.setCellValueFactory(new PropertyValueFactory<Appointment, String>("startDate"));
         TimeColumn.setCellValueFactory(new PropertyValueFactory<Appointment, LocalDateTime>("startTime"));
         EndTimeColumn.setCellValueFactory(new PropertyValueFactory<Appointment, LocalDateTime>("endTime"));
         MeetingTypeColumn.setCellValueFactory(new PropertyValueFactory<Appointment, String>("meetingType"));
         CustomerColumn.setCellValueFactory(new PropertyValueFactory<Appointment, String>("customerName"));
 
         // Load in Parts
-        AppointmentsTable.setItems(loggedInUsersAppointments);
+        AppointmentsTable.setItems(appointmentsToBePopulated);
     }
-
+    /*FXMLLoader loader=new FXMLLoader(getClass().getResource("Main.fxml"));
+                Parent root = (Parent) loader.load();
+                MainController mainController=loader.getController();
+                mainController.setLoggedInUser(loggedInUser);
+                Stage stage=new Stage();
+                stage.setScene(new Scene(root));
+                stage.show();*/
     @FXML
-    private void ModifyAppointmentButtonPressed(ActionEvent event) {
+    public void ModifyAppointmentButtonPressed(ActionEvent event) throws IOException {
+        try {
+            ((Node) (event.getSource())).getScene().getWindow().hide();
+            Appointment selectedAppointment = AppointmentsTable.getSelectionModel().getSelectedItem();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("ModifyAppointment.fxml"));
+            Parent     root       = (Parent) loader.load();
+            ModifyAppointmentController modifyAppointmentController=loader.getController();
+            modifyAppointmentController.setAppointmentToBeModified(selectedAppointment);
+            modifyAppointmentController.setUser(loggedInUser);
+            Stage      stage      = new Stage();
+            stage.setTitle("Modify Appointment");
+            stage.setScene(new Scene(root));
+            stage.show();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     public void AddAppointmentButtonPressed(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("AddAppointment.fxml"));
-        Parent     root       = (Parent) fxmlLoader.load();
-        Stage      stage      = new Stage();
-        stage.setTitle("Add Appointment");
-        stage.setScene(new Scene(root));
-        stage.show();
-        AddAppointmentController controller   = fxmlLoader.getController();
-        controller.setUserId(loggedInUser);
+        try {
+            ((Node) (event.getSource())).getScene().getWindow().hide();
+            FXMLLoader loader=new FXMLLoader(getClass().getResource("AddAppointment.fxml"));
+            Parent root = (Parent) loader.load();
+            AddAppointmentController addAppointmentController=loader.getController();
+            addAppointmentController.setUser(loggedInUser);
+            Stage stage=new Stage();
+            stage.setTitle("Add Appointment");
+            stage.setScene(new Scene(root));
+            stage.show();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -165,8 +200,8 @@ public class MainController implements Initializable {
         try {
             loggedInUser = user;
             AppointmentGreeter.setText("Welcome, " + loggedInUser.getUserName() + "!");
-            loggedInUsersAppointments = SQLQuery.retrieveAppointments(oneMonth, loggedInUser);
-            this.MonthViewRB.setSelected(true);
+            loggedInUsersAppointments = SQLQuery.retrieveAppointments(LocalDateTime.now().plusMonths(1), loggedInUser);
+            MonthViewRB.setSelected(true);
             populateAppointmentsTable();
         }
         catch (Exception e) {
@@ -177,10 +212,13 @@ public class MainController implements Initializable {
     
     public void WeekViewRBPressed(ActionEvent event) throws SQLException {
         this.WeekViewRB.setSelected(true);
+        populateAppointmentsTable();
     }
     
     public void MonthViewRBPressed(ActionEvent event) throws SQLException {
         this.MonthViewRB.setSelected(true);
+        populateAppointmentsTable();
+
     }
     
 }

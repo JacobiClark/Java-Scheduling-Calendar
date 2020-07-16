@@ -84,6 +84,8 @@ public class LogInController implements Initializable {
                 e.printStackTrace();
             }
         } else {
+            userNameField.clear();
+            passwordField.clear();
             Alert errorAlert = new Alert(AlertType.ERROR);
             errorAlert.setHeaderText(invalidCredentialsHeaderText);
             errorAlert.setContentText(invalidCredentialsContentText);

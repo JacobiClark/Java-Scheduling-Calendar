@@ -25,7 +25,7 @@ import utils.Query;
  * @author carolyn.sher
  */
 public class Main extends Application {
-    
+    static Stage stage;
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/view_controller/LogIn.fxml"));
@@ -34,41 +34,13 @@ public class Main extends Application {
         stage.show();
     }
 
-    /**
-     * @param args the command line arguments
-     */
+    public static Stage getStage() {
+        return stage;
+    }
+    
     public static void main(String[] args) throws SQLException {
         launch(args);
         DBConnection.closeConnection();
     }
     
 }
-
-/*//String insertStatement = "INSERT INTO country(country, createdate, createdBy, lastUpdateBy) VALUES ('US', '2020-02-22 00:00:00', 'admin', 'admin')";
-        
-        // variable Insert
-        String countryName = "Canada";
-        String createDate = "2020-06-04 00:00:00";
-        String createdBy = "admin";
-        String lastUpdateBy = "admin";
-        
-        String insertStatement  = "INSERT INTO country(country, createDate, createdBy, lastupdateBy)" +
-                                  "VALUES(" +
-                                  "'" + countryName +"'," +
-                                  "'" + createDate +"'," +
-                                  "'" + createdBy +"'," +
-                                  "'" + lastUpdateBy +"'," +
-                                  ")";
-        
-        //String updateStatement = "UPDATE country SET country = 'Japan' WHERE country = 'Canada'";
-        
-        //execute SQL statement
-        //statement.execute(insertStatement);
-        (if(statement.getUpdateCount() > 0)
-        {
-            System.out.println(statement.getUpdateCount() + " row(s) affected!");
-        }
-        else
-        {
-            System.out.println("No changes were made");
-        }*/

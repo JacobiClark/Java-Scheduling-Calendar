@@ -22,7 +22,7 @@ public class Appointment {
     private int appointmentID;
     private int customerId;
     private int userId;
-    private LocalDate date;
+    private String startDate;
     private LocalTime startTime;
     private LocalTime endTime;
     private LocalDateTime startDateTime;
@@ -34,13 +34,37 @@ public class Appointment {
         this.appointmentID = appointmentID;
         this.customerId = customerId;
         this.userId = userId;
-        this.date = LocalDate.parse(startTime.substring(0,10),df);
+        this.startDate = LocalDate.parse(startTime.substring(0,10),df).toString();
         this.startTime = LocalTime.parse(startTime.substring(11),tf);
         this.endTime = LocalTime.parse(endTime.substring(11),tf);
         this.startDateTime = LocalDateTime.parse(endTime, dtf);
         this.endDateTime = LocalDateTime.parse(endTime, dtf);
         this.meetingType = meetingType;
         this.customerName = customerName;
+    }
+
+    public DateTimeFormatter getDtf() {
+        return dtf;
+    }
+
+    public void setDtf(DateTimeFormatter dtf) {
+        this.dtf = dtf;
+    }
+
+    public DateTimeFormatter getDf() {
+        return df;
+    }
+
+    public void setDf(DateTimeFormatter df) {
+        this.df = df;
+    }
+
+    public DateTimeFormatter getTf() {
+        return tf;
+    }
+
+    public void setTf(DateTimeFormatter tf) {
+        this.tf = tf;
     }
 
     public int getAppointmentID() {
@@ -67,12 +91,12 @@ public class Appointment {
         this.userId = userId;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public String getStartDate() {
+        return startDate;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
     }
 
     public LocalTime getStartTime() {
@@ -93,6 +117,14 @@ public class Appointment {
 
     public LocalDateTime getStartDateTime() {
         return startDateTime;
+    }
+    
+    public String getStartDateTimeString() {
+        return startDateTime.toString().replace("T"," ");
+    }
+    
+    public String getEndDateTimeString() {
+        return endDateTime.toString().replace("T"," ");
     }
 
     public void setStartDateTime(LocalDateTime startDateTime) {
@@ -122,7 +154,5 @@ public class Appointment {
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
     }
-    
-    
     
 }

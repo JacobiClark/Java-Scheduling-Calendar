@@ -105,7 +105,7 @@ public class SQLQuery {
     public static ObservableList<Appointment> retrieveAppointments (LocalDateTime endTime, User loggedInUser) throws SQLException{
         ObservableList<Appointment> loggedInUsersAppointments = FXCollections.observableArrayList();
         int userId = loggedInUser.getUserId();
-        LocalDateTime now = LocalDateTime.now().minusYears(222);            
+        LocalDateTime now = LocalDateTime.now();            
         try {
             Connection conn = DBConnection.startConnection();
             String selectStatement = "SELECT * FROM user JOIN appointment ON user.userId = appointment.userId INNER JOIN customer ON appointment.customerId = customer.customerId WHERE user.userId=? AND appointment.end between ? and ?";
@@ -157,25 +157,68 @@ public class SQLQuery {
         }
         return ID;
     }
-    public static String retrieveAddressId(String address, String phone) throws SQLException {
-        String addressId = null;
+    public static int retrieveAddressId(String address, int cityId, String phone) throws SQLException {
+        Integer addressId = null;
         try {      
             Connection conn = DBConnection.startConnection();
-            String selectStatement = "SELECT addressId FROM address WHERE address = ? AND phone = ?";
+            String selectStatement = "SELECT addressId FROM address WHERE address = ? AND cityId = ? AND phone = ?";
             Query.setPreparedStatement(conn, selectStatement);
             PreparedStatement ps = Query.getPreparedStatement();
             ps.setString(1, address);
-            ps.setString(2, phone);
+            ps.setInt(2, cityId);
+            ps.setString(3, phone);
             ps.execute();
             ResultSet rs = ps.getResultSet();
             if (rs.next()) {
-                addressId = rs.getString("addressId");
+                addressId = rs.getInt("addressId");
             }
         }
         catch (SQLException e) {
-            System.out.println(e.getMessage() + "unable to get address id" );
+            System.out.println(e.getMessage());
         }
         return addressId;
+    }
+    
+    public static int retrieveCountryId(String country) throws SQLException {
+        Integer countryId = null;
+        try {      
+            Connection conn = DBConnection.startConnection();
+            String selectStatement = "SELECT countryId FROM country WHERE country=?";
+            Query.setPreparedStatement(conn, selectStatement);
+            PreparedStatement ps = Query.getPreparedStatement();
+            ps.setString(1, country);
+            ps.execute();
+            ResultSet rs = ps.getResultSet();
+            if (rs.next()) {
+                countryId = rs.getInt("countryId");
+            }
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return countryId;
+    }
+    
+    public static int retrieveCityId(String city, int countryId) throws SQLException {
+        Integer cityId = null;
+        try {      
+            Connection conn = DBConnection.startConnection();
+            String selectStatement = "SELECT cityId FROM city WHERE city=? AND countryId=?";
+            Query.setPreparedStatement(conn, selectStatement);
+            PreparedStatement ps = Query.getPreparedStatement();
+            ps.setString(1, city);
+            ps.setInt(2, countryId);
+
+            ps.execute();
+            ResultSet rs = ps.getResultSet();
+            if (rs.next()) {
+                cityId = rs.getInt("cityId");
+            }
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return cityId;
     }
     
     public static void insertAppointment(int customerId, int userId, String meetingType, LocalDateTime startTime, LocalDateTime endTime) throws SQLException {
@@ -193,6 +236,42 @@ public class SQLQuery {
         }
        catch (SQLException e) {
             System.out.println(e.getMessage() + "unable to add appointment" );
+        }
+    }
+    
+    public static void modifyAppointment(int appointmentID, int customerId, LocalDateTime startTime, LocalDateTime endTime, String meetingType) {
+        try {
+            Connection conn = DBConnection.startConnection();
+            String updateStatement = "UPDATE appointment SET customerId=?, start=?,end=?,type=? WHERE appointmentId=?";
+            Query.setPreparedStatement(conn, updateStatement);
+            PreparedStatement ps = Query.getPreparedStatement();
+            ps.setInt(1, customerId);
+            ps.setString(2, startTime.toString());
+            ps.setString(3, endTime.toString());
+            ps.setString(4, meetingType);
+            ps.setInt(5, appointmentID);
+            ps.execute();
+            System.out.println("done");
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage() + "unable to insert customer" );
+        }
+    }
+    
+    public static void modifyCustomer(int customerId, String customerName, int addressId) {
+        try {
+            Connection conn = DBConnection.startConnection();
+            String updateStatement = "UPDATE customer SET customerName=?, addressId=? WHERE customerId=?";
+            Query.setPreparedStatement(conn, updateStatement);
+            PreparedStatement ps = Query.getPreparedStatement();
+            ps.setString(1, customerName);
+            ps.setInt(2, addressId);
+            ps.setInt(3, customerId);
+            ps.execute();
+            System.out.println("done");
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage() + "unable to insert customer" );
         }
     }
     
@@ -224,14 +303,46 @@ public class SQLQuery {
         }
     }
     
-    public static void insertAddress(String phone, String address) throws SQLException {
+    public static void insertAddress(int cityId, String phone, String address, String postalCode) throws SQLException {
         try {
             Connection conn = DBConnection.startConnection();
-            String insertStatement = "INSERT INTO address (phone, address) VALUES (?,?)";
+            String insertStatement = "INSERT INTO address (cityId, phone, address, postalCode) VALUES (?,?,?,?)";
             Query.setPreparedStatement(conn, insertStatement);
             PreparedStatement ps = Query.getPreparedStatement();
-            ps.setString(1, phone);
-            ps.setString(2, address);
+            ps.setInt(1, cityId);
+            ps.setString(2, phone);
+            ps.setString(3, address);
+            ps.setString(4, postalCode);
+            ps.execute();
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    public static void insertCity(String city, int countryId) throws SQLException {
+        try {
+            Connection conn = DBConnection.startConnection();
+            String insertStatement = "INSERT INTO city (city, countryId) VALUES (?,?)";
+            Query.setPreparedStatement(conn, insertStatement);
+            PreparedStatement ps = Query.getPreparedStatement();
+            ps.setString(1, city);
+            ps.setInt(2, countryId);
+            ps.execute();
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    
+    public static void insertCountry(String country) throws SQLException {
+        try {
+            Connection conn = DBConnection.startConnection();
+            String insertStatement = "INSERT INTO country (country) VALUES (?)";
+            Query.setPreparedStatement(conn, insertStatement);
+            PreparedStatement ps = Query.getPreparedStatement();
+            ps.setString(1, country);
             ps.execute();
         }
         catch (SQLException e) {
@@ -239,18 +350,20 @@ public class SQLQuery {
         }
     }
 
-    public static void insertCustomer(String customerName, String addressId) throws SQLException {
+    public static void insertCustomer(String customerName, int addressId) throws SQLException {
         try {
             Connection conn = DBConnection.startConnection();
             String insertStatement = "INSERT INTO customer (customerName, addressId) VALUES (?,?)";
             Query.setPreparedStatement(conn, insertStatement);
             PreparedStatement ps = Query.getPreparedStatement();
             ps.setString(1, customerName);
-            ps.setString(2, addressId);
+            ps.setInt(2, addressId);
             ps.execute();
         }
         catch (SQLException e) {
             System.out.println(e.getMessage() + "unable to insert customer" );
         }
     }
+
+
 }

@@ -7,12 +7,7 @@ package view_controller;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,20 +19,19 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import utils.DBConnection;
-import utils.Query;
+import model.Customer;
 
 /**
  * FXML Controller class
  *
  * @author Jacobi
  */
-public class AddCustomerController implements Initializable {
-
+public class ModifyCustomerController implements Initializable {
+    private Customer customerToBeModified;
     @FXML
-    private Button AddCustomerCancelButton;
+    private Button ModifyCustomerCancelButton;
     @FXML
-    private Button AddCustomerSaveButton;
+    private Button ModifyCustomerSaveButton;
     @FXML
     private TextField CustomerName;
     @FXML
@@ -57,15 +51,26 @@ public class AddCustomerController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }    
-
-    @FXML
-    private void addCustomerCancelButtonPressed(ActionEvent event) {
-
+    }
+    
+    public void setCustomerToBeModified(Customer customer) {
+        try {
+            customerToBeModified = customer;
+            CustomerName.setText(customer.getCustomerName());
+            PhoneNumber.setText(customer.getPhone());
+            Address.setText(customer.getAddress());
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage() + " unable to import customer info :-(");
+        }
     }
 
     @FXML
-    private void addCustomerSaveButtonPressed(ActionEvent event) throws SQLException {
+    private void modifyCustomerCancelButtonPressed(ActionEvent event) {
+    }
+
+    @FXML
+    private void modifyCustomerSaveButtonPressed(ActionEvent event) throws SQLException {
         String customerName = CustomerName.getText();
         String phone = PhoneNumber.getText();
         String address = Address.getText();
@@ -79,7 +84,7 @@ public class AddCustomerController implements Initializable {
         SQL.SQLQuery.insertAddress(cityId, phone, address, zip);
         int addressId = SQL.SQLQuery.retrieveAddressId(address, cityId, phone);
         //Insert new address and generate addrssId Primary key
-        SQL.SQLQuery.insertCustomer(customerName, addressId);
+        SQL.SQLQuery.modifyCustomer(customerToBeModified.getCustomerId(), customerName, addressId);
         try {
             ((Node) (event.getSource())).getScene().getWindow().hide();
             FXMLLoader loader=new FXMLLoader(getClass().getResource("CustomerManagement.fxml"));
@@ -93,6 +98,5 @@ public class AddCustomerController implements Initializable {
             e.printStackTrace();
         }
     }
-
     
 }

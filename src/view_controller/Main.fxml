@@ -15,13 +15,13 @@
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <TableView fx:id="AppointmentsTable" layoutX="46.0" layoutY="118.0" prefHeight="544.0" prefWidth="970.0">
+      <TableView fx:id="AppointmentsTable" layoutX="66.0" layoutY="108.0" prefHeight="544.0" prefWidth="930.0">
          <columns>
-            <TableColumn fx:id="DateColumn" prefWidth="140.0" text="Date" />
-            <TableColumn fx:id="TimeColumn" prefWidth="140.0" text="Time" />
+            <TableColumn fx:id="DateColumn" prefWidth="150.0" text="Date" />
+            <TableColumn fx:id="TimeColumn" prefWidth="140.0" text="Start Time" />
             <TableColumn fx:id="EndTimeColumn" prefWidth="140.0" text="End Time" />
-            <TableColumn fx:id="MeetingTypeColumn" prefWidth="400.0" text="Meeting Type" />
-            <TableColumn fx:id="CustomerColumn" prefWidth="150.0" text="Customer" />
+            <TableColumn fx:id="MeetingTypeColumn" prefWidth="330.0" text="Meeting Type" />
+            <TableColumn fx:id="CustomerColumn" prefWidth="170.0" text="Customer" />
          </columns>
       </TableView>
       <Label fx:id="AppointmentGreeter" layoutX="499.0" layoutY="39.0" text="Welcome!" textAlignment="CENTER">
