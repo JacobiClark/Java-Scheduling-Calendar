@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -46,6 +47,8 @@ public class AddAppointmentController implements Initializable {
     @FXML
     private TextField CustomerName;
     @FXML
+    private TextField Date;
+    @FXML
     private TextField StartTime;
     @FXML
     private TextField EndTime;
@@ -65,14 +68,21 @@ public class AddAppointmentController implements Initializable {
         //Generate data to insert into db
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String customerName = CustomerName.getText();
+        String date = Date.getText();
+        String startTime = StartTime.getText();
+        String endTime = EndTime.getText();
         int customerId = SQLQuery.retrieveCustomerId(customerName);
-        LocalDateTime startTime = LocalDateTime.parse(StartTime.getText(), formatter);
-        LocalDateTime endTime = LocalDateTime.parse(EndTime.getText(), formatter);
         String meetingType = MeetingType.getText();
         //Insert appointment into db
-        SQLQuery.insertAppointment(customerId,loggedInUser.getUserId(),meetingType,startTime,endTime);
+        if(validateAppointmentClientSide(customerName, date, startTime, endTime, meetingType)) {
+            LocalDateTime startLDT = LocalDateTime.parse(date+" "+StartTime.getText(), formatter);
+            LocalDateTime endLDT = LocalDateTime.parse(date+" "+EndTime.getText(), formatter);
+            
+        }
+        
+        /*SQLQuery.insertAppointment(customerId,loggedInUser.getUserId(),meetingType,startLDT,endLDT);
         try {
-            ((Node) (event.getSource())).getScene().getWindow().hide();
+            ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
             FXMLLoader loader=new FXMLLoader(getClass().getResource("Main.fxml"));
             Parent root = (Parent) loader.load();
             MainController mainController=loader.getController();
@@ -83,7 +93,11 @@ public class AddAppointmentController implements Initializable {
         }
         catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
+    }
+    
+    private static boolean validateAppointmentClientSide(String customerName, String date, String startTime, String endTime, String meetingType) {
+        return (isStringValid(customerName) && isDateValid(date) && areTimesValid(startTime, endTime) && isStringValid(meetingType));
     }
 
     public void addAppointmentCancelButtonPressed(ActionEvent event) {
@@ -95,10 +109,38 @@ public class AddAppointmentController implements Initializable {
             ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
         }
     }
-
     
     public void setUser(User user) {
         loggedInUser = user;
+    }
+    
+    private static boolean isStringValid(String str) {
+        return (!str.isEmpty()
+                && str.matches("^[\\p{L} .'-]+$"));
+    }
+    
+    private static boolean isDateValid(String str) {
+        return (!str.isEmpty()
+                && str.matches("^\\d{4}-\\d{2}-\\d{2}$"));
+    }
+    
+    private static boolean areTimesValid(String startTime, String endTime) {
+        try {
+            LocalTime startOfDay = LocalTime.of(8,00);
+            LocalTime endOfDay = LocalTime.of(17,00);
+            DateTimeFormatter tf = DateTimeFormatter.ofPattern("HH:mm");
+            LocalTime startLocalTime = LocalTime.parse(startTime, tf);
+            LocalTime endLocalTime = LocalTime.parse(endTime, tf);
+            return(startLocalTime.compareTo(endLocalTime)<0
+                    && startLocalTime.compareTo(startOfDay)>0
+                    && endLocalTime.compareTo(endOfDay)<0);
+
+        }
+        catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return false;
+
     }
     
 }

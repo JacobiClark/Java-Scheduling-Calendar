@@ -109,15 +109,22 @@ public class MainController implements Initializable {
     }    
 
     public void DeleteAppointmentButtonPressed(ActionEvent event) throws SQLException {
-        Appointment selectedAppointment = AppointmentsTable.getSelectionModel().getSelectedItem();
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Delete selected Product");
-        alert.setHeaderText("Are you sure you want to delete?");
-        alert.setContentText("Are you sure you want to delete this product?");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
-            SQL.SQLQuery.deleteAppointment(selectedAppointment.getAppointmentID());
-            populateAppointmentsTable();
+        if(AppointmentsTable.getSelectionModel().getSelectedItem() != null) {
+            Appointment selectedAppointment = AppointmentsTable.getSelectionModel().getSelectedItem();
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete selected Product");
+            alert.setHeaderText("Are you sure you want to delete?");
+            alert.setContentText("Are you sure you want to delete this product?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK){
+                SQL.SQLQuery.deleteAppointment(selectedAppointment.getAppointmentID());
+                populateAppointmentsTable();
+            }
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("Please select an appointment from the table to delete.");
+            Optional<ButtonType> result = alert.showAndWait();
         }
     }
 
@@ -150,17 +157,23 @@ public class MainController implements Initializable {
     @FXML
     public void ModifyAppointmentButtonPressed(ActionEvent event) throws IOException {
         try {
-            ((Node) (event.getSource())).getScene().getWindow().hide();
-            Appointment selectedAppointment = AppointmentsTable.getSelectionModel().getSelectedItem();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("ModifyAppointment.fxml"));
-            Parent     root       = (Parent) loader.load();
-            ModifyAppointmentController modifyAppointmentController=loader.getController();
-            modifyAppointmentController.setAppointmentToBeModified(selectedAppointment);
-            modifyAppointmentController.setUser(loggedInUser);
-            Stage      stage      = new Stage();
-            stage.setTitle("Modify Appointment");
-            stage.setScene(new Scene(root));
-            stage.show();
+            if(AppointmentsTable.getSelectionModel().getSelectedItem() != null) {
+                Appointment selectedAppointment = AppointmentsTable.getSelectionModel().getSelectedItem();
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("ModifyAppointment.fxml"));
+                Parent     root       = (Parent) loader.load();
+                ModifyAppointmentController modifyAppointmentController=loader.getController();
+                modifyAppointmentController.setAppointmentToBeModified(selectedAppointment);
+                modifyAppointmentController.setUser(loggedInUser);
+                Stage      stage      = new Stage();
+                stage.setTitle("Modify Appointment");
+                stage.setScene(new Scene(root));
+                stage.show();
+            }
+            else {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setContentText("Please select an appointment from the table to modify.");
+                Optional<ButtonType> result = alert.showAndWait();
+            }
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -170,7 +183,7 @@ public class MainController implements Initializable {
     @FXML
     public void AddAppointmentButtonPressed(ActionEvent event) throws IOException {
         try {
-            ((Node) (event.getSource())).getScene().getWindow().hide();
+            ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
             FXMLLoader loader=new FXMLLoader(getClass().getResource("AddAppointment.fxml"));
             Parent root = (Parent) loader.load();
             AddAppointmentController addAppointmentController=loader.getController();
@@ -193,7 +206,6 @@ public class MainController implements Initializable {
         stage.setTitle("Customer Management");
         stage.setScene(new Scene(root));
         stage.show();
-
     }
 
     public void setLoggedInUser(User user) throws SQLException {

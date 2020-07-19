@@ -97,7 +97,7 @@ public class SQLQuery {
             }
         }
         catch (SQLException e) {
-            System.out.println("failed to create appointment" );
+            System.out.println(e.getMessage());
         }
         return customers;
     }
@@ -153,7 +153,7 @@ public class SQLQuery {
             }
         }
         catch (SQLException e) {
-            System.out.println(e.getMessage() + "unable to get customer id" );
+            System.out.println(e.getMessage() + " unable to get customer id" );
         }
         return ID;
     }

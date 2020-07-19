@@ -71,7 +71,7 @@ public class LogInController implements Initializable {
             // Do successful authentication handling
             User loggedInUser = SQLQuery.createUser(userName);
             try {
-                ((Node) (event.getSource())).getScene().getWindow().hide();
+                ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
                 FXMLLoader loader=new FXMLLoader(getClass().getResource("Main.fxml"));
                 Parent root = (Parent) loader.load();
                 MainController mainController=loader.getController();
