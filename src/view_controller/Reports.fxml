@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="942.0" prefWidth="977.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view_controller.ReportsController">
+   <children>
+      <TableView fx:id="ConsultantScheduleTable" layoutX="21.0" layoutY="130.0" prefHeight="292.0" prefWidth="930.0">
+         <columns>
+            <TableColumn fx:id="DateColumn" prefWidth="150.0" text="Date" />
+            <TableColumn fx:id="TimeColumn" prefWidth="140.0" text="Start Time" />
+            <TableColumn fx:id="EndTimeColumn" prefWidth="140.0" text="End Time" />
+            <TableColumn fx:id="TypeColumn" prefWidth="330.0" text="Meeting Type" />
+            <TableColumn fx:id="CustomerColumn" prefWidth="170.0" text="Customer" />
+         </columns>
+      </TableView>
+      <TableView fx:id="AppointmentsFromMonthTable" layoutX="28.0" layoutY="500.0" prefHeight="330.0" prefWidth="450.0">
+         <columns>
+            <TableColumn fx:id="MeetingTypeMonthlyColumn" prefWidth="350.0" text="Meeting Type" />
+            <TableColumn fx:id="AmountColumn" prefWidth="100.0" text="Amount" />
+         </columns>
+      </TableView>
+      <Label layoutX="507.0" layoutY="28.0" text="Reports!" textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="35.0" layoutY="458.0" text="All appointments from month: " textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <TextField fx:id="MonthYearField" layoutX="311.0" layoutY="456.0" maxWidth="160.0" prefHeight="30.0" prefWidth="78.0" promptText="XX/XXXX" text="07/2020">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </TextField>
+      <Label layoutX="35.0" layoutY="90.0" text="Generate all appointments for consultant:" textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <TextField fx:id="ConsultantNameField" layoutX="405.0" layoutY="89.0" maxWidth="160.0" prefHeight="30.0" prefWidth="134.0" promptText="Name">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </TextField>
+      <TableView fx:id="ConsultantsTable" layoutX="512.0" layoutY="500.0" prefHeight="330.0" prefWidth="200.0">
+         <columns>
+            <TableColumn fx:id="ConsultantColumn" prefWidth="200.0" text="Consultants" />
+         </columns>
+      </TableView>
+      <Label layoutX="551.0" layoutY="459.0" text="Consultant list" textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <TableView fx:id="CustomersTable" layoutX="737.0" layoutY="500.0" prefHeight="330.0" prefWidth="200.0">
+         <columns>
+            <TableColumn fx:id="CustomersColumn" prefWidth="200.0" text="Customers" />
+         </columns>
+      </TableView>
+      <Label layoutX="775.0" layoutY="458.0" text="Customers List" textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Button id="productsSearchButton" fx:id="ExitButton" layoutX="778.0" layoutY="55.0" maxWidth="173.0" minWidth="70.0" mnemonicParsing="false" onAction="#ExitButtonPressed" prefHeight="30.0" prefWidth="173.0" text="Exit">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <Button id="productsSearchButton" fx:id="GenerateAppointmentsForConsultantButton" layoutX="552.0" layoutY="89.0" maxWidth="173.0" minWidth="70.0" mnemonicParsing="false" onAction="#generateAppointmentsForConsultantButtonPressed" prefHeight="30.0" prefWidth="78.0" text="Generate">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+      <Button id="productsSearchButton" fx:id="GenerateAppointmentsFromMonthButton" layoutX="400.0" layoutY="456.0" maxWidth="173.0" minWidth="70.0" mnemonicParsing="false" onAction="#generateAppointmentsFromMonthButtonPressed" prefHeight="30.0" prefWidth="78.0" text="Generate">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>

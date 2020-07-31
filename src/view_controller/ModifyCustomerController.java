@@ -86,7 +86,7 @@ public class ModifyCustomerController implements Initializable {
         //Insert new address and generate addrssId Primary key
         SQL.SQLQuery.modifyCustomer(customerToBeModified.getCustomerId(), customerName, addressId);
         try {
-            ((Node) (event.getSource())).getScene().getWindow().hide();
+            ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
             FXMLLoader loader=new FXMLLoader(getClass().getResource("CustomerManagement.fxml"));
             Parent root = (Parent) loader.load();
             Stage stage=new Stage();

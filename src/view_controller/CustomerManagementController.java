@@ -125,6 +125,7 @@ public class CustomerManagementController implements Initializable {
     private void ModifyCustomerButtonPressed(ActionEvent event) throws IOException {
         if(CustomersTable.getSelectionModel().getSelectedItem() != null) {
             Customer selectedCustomer = CustomersTable.getSelectionModel().getSelectedItem();
+            ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("ModifyCustomer.fxml"));
             Parent     root       = (Parent) loader.load();
             Stage      stage      = new Stage();
@@ -159,7 +160,12 @@ public class CustomerManagementController implements Initializable {
 
     @FXML
     private void BackToCalendarButtonPressed(ActionEvent event) throws IOException {
-        ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
+        WindowCloser closer = () -> ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
+        closer.closeWindow();
     }
+
     
+    interface WindowCloser{
+        void closeWindow();
+    }
 }

@@ -99,14 +99,13 @@ public class MainController implements Initializable {
         viewSelector = new ToggleGroup();
         WeekViewRB.setToggleGroup(viewSelector);
         MonthViewRB.setToggleGroup(viewSelector);
-        try {
-            populateAppointmentsTable();
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
+    }
     
-    }    
+    public void alertIfAppointmentInFifteen() {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("You have a meeting in less than 15 minutes! Better Hurry!");
+            Optional<ButtonType> result = alert.showAndWait();
+    }
 
     public void DeleteAppointmentButtonPressed(ActionEvent event) throws SQLException {
         if(AppointmentsTable.getSelectionModel().getSelectedItem() != null) {
@@ -159,6 +158,7 @@ public class MainController implements Initializable {
         try {
             if(AppointmentsTable.getSelectionModel().getSelectedItem() != null) {
                 Appointment selectedAppointment = AppointmentsTable.getSelectionModel().getSelectedItem();
+                ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("ModifyAppointment.fxml"));
                 Parent     root       = (Parent) loader.load();
                 ModifyAppointmentController modifyAppointmentController=loader.getController();
@@ -199,6 +199,16 @@ public class MainController implements Initializable {
     }
 
     @FXML
+    private void GenerateReportsButtonPressed(ActionEvent event) throws IOException, SQLException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Reports.fxml"));
+        Parent     root       = (Parent) fxmlLoader.load();
+        Stage      stage      = new Stage();
+        stage.setTitle("Reports");
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
+    
+    @FXML
     private void CustomerManagementButtonPressed(ActionEvent event) throws IOException, SQLException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CustomerManagement.fxml"));
         Parent     root       = (Parent) fxmlLoader.load();
@@ -211,7 +221,8 @@ public class MainController implements Initializable {
     public void setLoggedInUser(User user) throws SQLException {
         try {
             loggedInUser = user;
-            AppointmentGreeter.setText("Welcome, " + loggedInUser.getUserName() + "!");
+            Greeter greeter = () -> AppointmentGreeter.setText("Welcome, " + loggedInUser.getUserName() + "!");
+            greeter.greetUser();
             loggedInUsersAppointments = SQLQuery.retrieveAppointments(LocalDateTime.now().plusMonths(1), loggedInUser);
             MonthViewRB.setSelected(true);
             populateAppointmentsTable();
@@ -219,7 +230,10 @@ public class MainController implements Initializable {
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
+    }
+    
+    interface Greeter{
+        void greetUser();
     }
     
     public void WeekViewRBPressed(ActionEvent event) throws SQLException {

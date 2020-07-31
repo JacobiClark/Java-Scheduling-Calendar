@@ -11,7 +11,7 @@
 
 <AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="512.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view_controller.AddAppointmentController">
    <children>
-      <Label layoutX="176.0" layoutY="36.0" prefHeight="27.0" prefWidth="160.0" text="Add Appointment">
+      <Label layoutX="176.0" layoutY="36.0" prefHeight="27.0" prefWidth="188.0" text="Add Appointment">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
@@ -49,6 +49,16 @@
                   <Font size="14.0" />
                </font>
             </TextField>
+            <Label text="Date" GridPane.rowIndex="1">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="Date" maxWidth="184.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" promptText="YYYY-MM-DD " text="2020-08-05" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </TextField>
             <Label prefHeight="20.0" prefWidth="78.0" text="Start Time" GridPane.rowIndex="2">
                <font>
                   <Font size="14.0" />
@@ -79,16 +89,6 @@
                   <Font size="14.0" />
                </font>
             </TextField>
-            <TextField fx:id="Date" maxWidth="184.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" promptText="YYYY-MM-DD " text="2020-07-22" GridPane.columnIndex="1" GridPane.rowIndex="1">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </TextField>
-            <Label text="Date" GridPane.rowIndex="1">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
          </children>
       </GridPane>
    </children>

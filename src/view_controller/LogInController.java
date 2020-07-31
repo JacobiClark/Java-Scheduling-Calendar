@@ -6,9 +6,19 @@
 package view_controller;
 
 import SQL.SQLQuery;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,10 +26,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Scanner;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -57,19 +71,20 @@ public class LogInController implements Initializable {
 
 
     @FXML
-    private void logInButtonPushed(ActionEvent event) throws SQLException {
+    private void logInButtonPushed(ActionEvent event) throws SQLException, IOException {
         String userName = userNameField.getText();
         String password = passwordField.getText();
-        //Initiate connection to database
-               /* Connection conn = DBConnection.startConnection();
-        Query.setStatement(conn);     
-        Statement statement = Query.getStatement();        
-        String selectStatement = "SELECT * FROM user WHERE userName='" + userName + "' AND password='" + password + "'"; 
-        statement.execute(selectStatement);
-        ResultSet rs = statement.getResultSet();*/
         if (SQLQuery.authenticate(userName, password)) {
-            // Do successful authentication handling
             User loggedInUser = SQLQuery.createUser(userName);
+            String logUser = loggedInUser.getUserName() + " logged in at " + LocalDateTime.now() + "\n";
+            BufferedWriter writer = new BufferedWriter(
+                new FileWriter("src/data/logs.txt", true)  //Set true for append mode
+            );  
+            writer.write(logUser);
+            writer.close();
+
+
+
             try {
                 ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
                 FXMLLoader loader=new FXMLLoader(getClass().getResource("Main.fxml"));
@@ -79,6 +94,10 @@ public class LogInController implements Initializable {
                 Stage stage=new Stage();
                 stage.setScene(new Scene(root));
                 stage.show();
+                if (SQL.SQLQuery.retrieveAppointmentsInFifteen(loggedInUser.getUserId())) {
+                    mainController.alertIfAppointmentInFifteen();
+                    System.out.println("true");
+                }
             }
             catch (IOException e) {
                 e.printStackTrace();

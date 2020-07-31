@@ -42,6 +42,10 @@ public class Appointment {
         this.meetingType = meetingType;
         this.customerName = customerName;
     }
+    
+    public String getDate() {
+        return startDate;
+    }
 
     public DateTimeFormatter getDtf() {
         return dtf;

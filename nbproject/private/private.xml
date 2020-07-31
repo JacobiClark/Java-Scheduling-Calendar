@@ -5,9 +5,14 @@
         <group>
             <file>file:/C:/Users/Jacobi/programming/C195/Jacob%20Clark%20C195/src/model/Appointment.java</file>
             <file>file:/C:/Users/Jacobi/programming/C195/Jacob%20Clark%20C195/src/view_controller/AddAppointmentController.java</file>
-            <file>file:/C:/Users/Jacobi/programming/C195/Jacob%20Clark%20C195/src/SQL/SQLQuery.java</file>
+            <file>file:/C:/Users/Jacobi/programming/C195/Jacob%20Clark%20C195/src/view_controller/ReportsController.java</file>
+            <file>file:/C:/Users/Jacobi/programming/C195/Jacob%20Clark%20C195/src/view_controller/DAOPatternDemoController.java</file>
+            <file>file:/C:/Users/Jacobi/programming/C195/Jacob%20Clark%20C195/src/C195App/Main.java</file>
+            <file>file:/C:/Users/Jacobi/programming/C195/Jacob%20Clark%20C195/src/utils/AppointmentTypeCount.java</file>
             <file>file:/C:/Users/Jacobi/programming/C195/Jacob%20Clark%20C195/src/view_controller/LogInController.java</file>
+            <file>file:/C:/Users/Jacobi/programming/C195/Jacob%20Clark%20C195/src/view_controller/AddCustomerController.java</file>
             <file>file:/C:/Users/Jacobi/programming/C195/Jacob%20Clark%20C195/src/view_controller/MainController.java</file>
+            <file>file:/C:/Users/Jacobi/programming/C195/Jacob%20Clark%20C195/src/view_controller/CustomerManagementController.java</file>
         </group>
     </open-files>
 </project-private>

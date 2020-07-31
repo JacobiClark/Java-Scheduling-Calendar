@@ -21,8 +21,7 @@ public class User {
     private LocalDateTime createDate;
     private String createdBy;
     private LocalDateTime lastUpdate;
-    private String lastUpdateBy; 
-
+    private String lastUpdateBy;
     public User(int userId, String userName, String password, boolean active, LocalDateTime createDate, String createdBy, LocalDateTime lastUpdate, String lastUpdateBy) {
         this.userId = userId;
         this.userName = userName;

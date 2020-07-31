@@ -17,7 +17,7 @@ public class DBConnection {
     
     private static final String protocol = "jdbc";
     private static final String vendorName = ":mysql:";
-    private static final String ipAddress = "//3.227.166.251/U06r1w";
+    private static final String ipAddress = "//3.227.166.251/U06r1w?useSSL=false";
     
     // JDBC URL
     private static final String jdcbcURL = protocol + vendorName + ipAddress;

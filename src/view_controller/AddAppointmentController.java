@@ -6,6 +6,7 @@
 package view_controller;
 
 import SQL.SQLQuery;
+import com.sun.corba.se.impl.util.Utility;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -66,22 +67,69 @@ public class AddAppointmentController implements Initializable {
     @FXML
     private void addAppointmentSaveButtonPressed(ActionEvent event) throws SQLException, IOException {
         //Generate data to insert into db
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        int customerId=0;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
         String customerName = CustomerName.getText();
         String date = Date.getText();
         String startTime = StartTime.getText();
         String endTime = EndTime.getText();
-        int customerId = SQLQuery.retrieveCustomerId(customerName);
         String meetingType = MeetingType.getText();
-        //Insert appointment into db
-        if(validateAppointmentClientSide(customerName, date, startTime, endTime, meetingType)) {
-            LocalDateTime startLDT = LocalDateTime.parse(date+" "+StartTime.getText(), formatter);
-            LocalDateTime endLDT = LocalDateTime.parse(date+" "+EndTime.getText(), formatter);
-            
-        }
-        
-        /*SQLQuery.insertAppointment(customerId,loggedInUser.getUserId(),meetingType,startLDT,endLDT);
+        String startString = date+" "+StartTime.getText()+":00.0";
+        String endString = date+" "+EndTime.getText()+":00.0";
+        LocalDateTime startLDT = LocalDateTime.parse(startString, formatter);
+        LocalDateTime endLDT = LocalDateTime.parse(endString, formatter);
         try {
+            customerId = SQLQuery.retrieveCustomerId(customerName);
+            if(validateAppointmentClientSide(customerName, date, startTime, endTime, meetingType)
+                    && !SQL.SQLQuery.checkIfOverlappingAppointments(loggedInUser.getUserId(), startLDT, endLDT, 0)) {
+                System.out.println("appointment valid client side");
+                SQLQuery.insertAppointment(customerId,loggedInUser.getUserId(),meetingType,startLDT,endLDT);
+                try {
+                    ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
+                    FXMLLoader loader=new FXMLLoader(getClass().getResource("Main.fxml"));
+                    Parent root = (Parent) loader.load();
+                    MainController mainController=loader.getController();
+                    mainController.setLoggedInUser(loggedInUser);
+                    Stage stage=new Stage();
+                    stage.setScene(new Scene(root));
+                    stage.show();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setHeaderText("Unable to add appointment.");
+                errorAlert.setContentText("Please review all text fields and ensure no overlapping appointments .");
+                errorAlert.showAndWait();
+            }
+        }
+        catch (NullPointerException e) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setContentText("Failed to find customer. Would you like to open customer management?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK){
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CustomerManagement.fxml"));
+                Parent     root       = (Parent) fxmlLoader.load();
+                Stage      stage      = new Stage();
+                stage.setTitle("Customer Management");
+                stage.setScene(new Scene(root));
+                stage.show();
+            }
+        }
+    }
+    
+    private static boolean validateAppointmentClientSide(String customerName, String date, String startTime, String endTime, String meetingType) {
+        return (isStringValid(customerName) && isDateValid(date) && areTimesValid(startTime, endTime) && isStringValid(meetingType));
+    }
+
+    public void addAppointmentCancelButtonPressed(ActionEvent event) throws IOException, SQLException {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Cancel Add Appointment");
+        alert.setContentText("Are you sure you want to cancel adding this Appointment?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
             ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
             FXMLLoader loader=new FXMLLoader(getClass().getResource("Main.fxml"));
             Parent root = (Parent) loader.load();
@@ -90,23 +138,6 @@ public class AddAppointmentController implements Initializable {
             Stage stage=new Stage();
             stage.setScene(new Scene(root));
             stage.show();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }*/
-    }
-    
-    private static boolean validateAppointmentClientSide(String customerName, String date, String startTime, String endTime, String meetingType) {
-        return (isStringValid(customerName) && isDateValid(date) && areTimesValid(startTime, endTime) && isStringValid(meetingType));
-    }
-
-    public void addAppointmentCancelButtonPressed(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Cancel Add Appointment");
-        alert.setContentText("Are you sure you want to cancel adding this Appointment?");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
-            ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
         }
     }
     
@@ -140,7 +171,6 @@ public class AddAppointmentController implements Initializable {
             System.out.println(e.getMessage());
         }
         return false;
-
     }
     
 }
