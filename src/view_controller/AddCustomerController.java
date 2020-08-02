@@ -60,8 +60,14 @@ public class AddCustomerController implements Initializable {
     }    
 
     @FXML
-    private void addCustomerCancelButtonPressed(ActionEvent event) {
-
+    private void addCustomerCancelButtonPressed(ActionEvent event) throws IOException {
+        ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();        
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CustomerManagement.fxml"));
+        Parent     root       = (Parent) fxmlLoader.load();
+        Stage      stage      = new Stage();
+        stage.setTitle("Customer Management");
+        stage.setScene(new Scene(root));
+        stage.show();
     }
 
     @FXML

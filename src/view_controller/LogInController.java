@@ -96,7 +96,6 @@ public class LogInController implements Initializable {
                 stage.show();
                 if (SQL.SQLQuery.retrieveAppointmentsInFifteen(loggedInUser.getUserId())) {
                     mainController.alertIfAppointmentInFifteen();
-                    System.out.println("true");
                 }
             }
             catch (IOException e) {

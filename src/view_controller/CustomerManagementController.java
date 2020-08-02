@@ -45,8 +45,8 @@ import utils.Query;
  * @author Jacobi
  */
 public class CustomerManagementController implements Initializable {
-    public static ObservableList<Customer>customers= FXCollections.observableArrayList();
 
+    public static ObservableList<Customer> customers = FXCollections.observableArrayList();
 
     @FXML
     private Label appointmentTimeFrameDescriptor;
@@ -72,17 +72,15 @@ public class CustomerManagementController implements Initializable {
     private Button AddCustomerButton;
     @FXML
     private Button BackToCalendarButton;
-    
+
     public void populateCustomersTable() throws SQLException {
         customers = SQL.SQLQuery.retrieveCustomers();
-        // Initialize product table columns
         NameColumn.setCellValueFactory(new PropertyValueFactory<Customer, String>("customerName"));
         PhoneNumberColumn.setCellValueFactory(new PropertyValueFactory<Customer, String>("phone"));
         AddressColumn.setCellValueFactory(new PropertyValueFactory<Customer, String>("address"));
         CityColumn.setCellValueFactory(new PropertyValueFactory<Customer, String>("city"));
         ZipColumn.setCellValueFactory(new PropertyValueFactory<Customer, String>("zip"));
         CountryColumn.setCellValueFactory(new PropertyValueFactory<Customer, String>("country"));
-        // Load in Parts
         CustomersTable.setItems(customers);
     }
 
@@ -92,29 +90,26 @@ public class CustomerManagementController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         try {
             populateCustomersTable();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage() + " unable to populate customers table");
         }
-        catch (SQLException e) {
-            System.out.println(e.getMessage() + " unable to populate customers table" );
-        }
-        
     }
 
     @FXML
     public void DeleteCustomerButtonPressed(ActionEvent event) throws SQLException {
-        if(CustomersTable.getSelectionModel().getSelectedItem() != null) {
+        if (CustomersTable.getSelectionModel().getSelectedItem() != null) {
             Customer selectedCustomer = CustomersTable.getSelectionModel().getSelectedItem();
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Delete selected Product");
+            alert.setTitle("Delete selected customer");
             alert.setHeaderText("Are you sure you want to delete?");
-            alert.setContentText("Are you sure you want to delete this product?");
+            alert.setContentText("Are you sure you want to delete this customer?");
             Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK){
+            if (result.get() == ButtonType.OK) {
                 System.out.println(selectedCustomer.getCustomerId());
                 SQL.SQLQuery.deleteCustomer(selectedCustomer.getCustomerId());
                 populateCustomersTable();
             }
-        }
-        else {
+        } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText("Please select a customer from the table to delete.");
             Optional<ButtonType> result = alert.showAndWait();
@@ -123,19 +118,18 @@ public class CustomerManagementController implements Initializable {
 
     @FXML
     private void ModifyCustomerButtonPressed(ActionEvent event) throws IOException {
-        if(CustomersTable.getSelectionModel().getSelectedItem() != null) {
+        if (CustomersTable.getSelectionModel().getSelectedItem() != null) {
             Customer selectedCustomer = CustomersTable.getSelectionModel().getSelectedItem();
             ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("ModifyCustomer.fxml"));
-            Parent     root       = (Parent) loader.load();
-            Stage      stage      = new Stage();
+            Parent root = (Parent) loader.load();
+            Stage stage = new Stage();
             stage.setTitle("Modify Customer");
             stage.setScene(new Scene(root));
             stage.show();
-            ModifyCustomerController modifyCustomerController=loader.getController();
+            ModifyCustomerController modifyCustomerController = loader.getController();
             modifyCustomerController.setCustomerToBeModified(selectedCustomer);
-        }
-        else {
+        } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText("Please select a customer from the table to modify.");
             Optional<ButtonType> result = alert.showAndWait();
@@ -146,14 +140,13 @@ public class CustomerManagementController implements Initializable {
     private void AddCustomerButtonPressed(ActionEvent event) throws IOException {
         try {
             ((Node) (event.getSource())).getScene().getWindow().hide();
-            FXMLLoader loader=new FXMLLoader(getClass().getResource("AddCustomer.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("AddCustomer.fxml"));
             Parent root = (Parent) loader.load();
-            Stage stage=new Stage();
+            Stage stage = new Stage();
             stage.setTitle("Add Customer");
             stage.setScene(new Scene(root));
             stage.show();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -164,8 +157,8 @@ public class CustomerManagementController implements Initializable {
         closer.closeWindow();
     }
 
-    
-    interface WindowCloser{
+    interface WindowCloser {
+
         void closeWindow();
     }
 }

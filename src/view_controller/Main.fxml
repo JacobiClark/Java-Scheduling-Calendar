@@ -24,7 +24,7 @@
             <TableColumn fx:id="CustomerColumn" prefWidth="170.0" text="Customer" />
          </columns>
       </TableView>
-      <Label fx:id="AppointmentGreeter" layoutX="499.0" layoutY="39.0" text="Welcome!" textAlignment="CENTER">
+      <Label fx:id="AppointmentGreeter" layoutX="470.0" layoutY="30.0" text="Welcome!" textAlignment="CENTER">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>

@@ -90,7 +90,6 @@ public class ModifyAppointmentController implements Initializable {
         stage.show();
     }
     private static boolean validateAppointmentClientSide(String customerName, String date, String startTime, String endTime, String meetingType) {
-        System.out.println(isStringValid(customerName) && isDateValid(date) && areTimesValid(startTime, endTime) && isStringValid(meetingType));
         return (isStringValid(customerName) && isDateValid(date) && areTimesValid(startTime, endTime) && isStringValid(meetingType));
     }
     
@@ -123,57 +122,57 @@ public class ModifyAppointmentController implements Initializable {
     }
     @FXML
     private void modifyAppointmentSaveButtonPressed(ActionEvent event) throws SQLException, IOException {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
-        String customerName = CustomerName.getText();
-        String date = Date.getText();
-        String startTime = StartTime.getText();
-        String endTime = EndTime.getText();
-        String meetingType = MeetingType.getText();
-        String startString = date+" "+StartTime.getText()+":00.0";
-        String endString = date+" "+EndTime.getText()+":00.0";
-        LocalDateTime startLDT = LocalDateTime.parse(startString, formatter);
-        LocalDateTime endLDT = LocalDateTime.parse(endString, formatter);
-        
-        try {
-            System.out.println(appointmentToBeModified.getAppointmentID());
-            int customerId = SQLQuery.retrieveCustomerId(customerName);
-            if(validateAppointmentClientSide(customerName, date, startTime, endTime, meetingType)) {
-                System.out.println("appointmentmodify valid");//appointmentToBeModified.getAppointmentID(), customerId, startTime, endTime, meetingType
-                SQLQuery.modifyAppointment(appointmentToBeModified.getAppointmentID(), customerId, startLDT, endLDT, meetingType);
-                try {
-                    ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
-                    FXMLLoader loader=new FXMLLoader(getClass().getResource("Main.fxml"));
-                    Parent root = (Parent) loader.load();
-                    MainController mainController=loader.getController();
-                    mainController.setLoggedInUser(loggedInUser);
-                    Stage stage=new Stage();
+        if (validateAppointmentClientSide(CustomerName.getText(), Date.getText(), StartTime.getText(), EndTime.getText(), MeetingType.getText())) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+            String customerName = CustomerName.getText();
+            String date = Date.getText();
+            String startTime = StartTime.getText();
+            String endTime = EndTime.getText();
+            String meetingType = MeetingType.getText();
+            String startString = date + " " + StartTime.getText() + ":00.0";
+            String endString = date + " " + EndTime.getText() + ":00.0";
+            LocalDateTime startLDT = LocalDateTime.parse(startString, formatter);
+            LocalDateTime endLDT = LocalDateTime.parse(endString, formatter);
+            try {
+                int customerId = SQLQuery.retrieveCustomerId(customerName);
+                if (validateAppointmentClientSide(customerName, date, startTime, endTime, meetingType)) {
+                    SQLQuery.modifyAppointment(appointmentToBeModified.getAppointmentID(), customerId, startLDT, endLDT, meetingType);
+                    try {
+                        ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("Main.fxml"));
+                        Parent root = (Parent) loader.load();
+                        MainController mainController = loader.getController();
+                        mainController.setLoggedInUser(loggedInUser);
+                        Stage stage = new Stage();
+                        stage.setScene(new Scene(root));
+                        stage.show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setHeaderText("Unable to add appointment.");
+                    errorAlert.setContentText("Please review all text fields and ensure no overlapping appointments .");
+                    errorAlert.showAndWait();
+                }
+            } catch (NullPointerException e) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setContentText("Failed to find customer. Would you like to open customer management?");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK) {
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CustomerManagement.fxml"));
+                    Parent root = (Parent) fxmlLoader.load();
+                    Stage stage = new Stage();
+                    stage.setTitle("Customer Management");
                     stage.setScene(new Scene(root));
                     stage.show();
                 }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
-            else {
-                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                errorAlert.setHeaderText("Unable to add appointment.");
-                errorAlert.setContentText("Please review all text fields and ensure no overlapping appointments .");
-                errorAlert.showAndWait();
-            }
-        }
-        catch (NullPointerException e) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setContentText("Failed to find customer. Would you like to open customer management?");
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK){
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CustomerManagement.fxml"));
-                Parent     root       = (Parent) fxmlLoader.load();
-                Stage      stage      = new Stage();
-                stage.setTitle("Customer Management");
-                stage.setScene(new Scene(root));
-                stage.show();
-            }
+        } else {
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setHeaderText("Invalid appointment input");
+            errorAlert.setContentText("Please verify all entered data.");
+            errorAlert.showAndWait();
         }
     }
-    
 }

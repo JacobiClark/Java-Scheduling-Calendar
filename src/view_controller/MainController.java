@@ -113,7 +113,7 @@ public class MainController implements Initializable {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Delete selected Product");
             alert.setHeaderText("Are you sure you want to delete?");
-            alert.setContentText("Are you sure you want to delete this product?");
+            alert.setContentText("Are you sure you want to delete this appointment?");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK){
                 SQL.SQLQuery.deleteAppointment(selectedAppointment.getAppointmentID());
@@ -129,7 +129,7 @@ public class MainController implements Initializable {
 
     public void populateAppointmentsTable() throws SQLException {
         ObservableList<Appointment> appointmentsToBePopulated = FXCollections.observableArrayList();
-        // Initialize product table columns
+        // Initialize appointment table columns
         if (WeekViewRB.isSelected()) {
             appointmentsToBePopulated = SQLQuery.retrieveAppointments(LocalDateTime.now().plusWeeks(1), loggedInUser);
         }

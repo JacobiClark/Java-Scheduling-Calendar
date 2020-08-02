@@ -66,57 +66,63 @@ public class AddAppointmentController implements Initializable {
 
     @FXML
     private void addAppointmentSaveButtonPressed(ActionEvent event) throws SQLException, IOException {
-        //Generate data to insert into db
-        int customerId=0;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
-        String customerName = CustomerName.getText();
-        String date = Date.getText();
-        String startTime = StartTime.getText();
-        String endTime = EndTime.getText();
-        String meetingType = MeetingType.getText();
-        String startString = date+" "+StartTime.getText()+":00.0";
-        String endString = date+" "+EndTime.getText()+":00.0";
-        LocalDateTime startLDT = LocalDateTime.parse(startString, formatter);
-        LocalDateTime endLDT = LocalDateTime.parse(endString, formatter);
-        try {
-            customerId = SQLQuery.retrieveCustomerId(customerName);
-            if(validateAppointmentClientSide(customerName, date, startTime, endTime, meetingType)
-                    && !SQL.SQLQuery.checkIfOverlappingAppointments(loggedInUser.getUserId(), startLDT, endLDT, 0)) {
-                System.out.println("appointment valid client side");
-                SQLQuery.insertAppointment(customerId,loggedInUser.getUserId(),meetingType,startLDT,endLDT);
-                try {
-                    ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
-                    FXMLLoader loader=new FXMLLoader(getClass().getResource("Main.fxml"));
-                    Parent root = (Parent) loader.load();
-                    MainController mainController=loader.getController();
-                    mainController.setLoggedInUser(loggedInUser);
-                    Stage stage=new Stage();
+        if(validateAppointmentClientSide(CustomerName.getText(), Date.getText(), StartTime.getText(), EndTime.getText(), MeetingType.getText())) {
+            //Generate data to insert into db
+            int customerId=0;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+            String customerName = CustomerName.getText();
+            String date = Date.getText();
+            String startTime = StartTime.getText();
+            String endTime = EndTime.getText();
+            String meetingType = MeetingType.getText();
+            String startString = date+" "+StartTime.getText()+":00.0";
+            String endString = date+" "+EndTime.getText()+":00.0";
+            LocalDateTime startLDT = LocalDateTime.parse(startString, formatter);
+            LocalDateTime endLDT = LocalDateTime.parse(endString, formatter);
+            try {
+                customerId = SQLQuery.retrieveCustomerId(customerName);
+                if(!SQL.SQLQuery.checkIfOverlappingAppointments(loggedInUser.getUserId(), startLDT, endLDT, 0)) {
+                    SQLQuery.insertAppointment(customerId,loggedInUser.getUserId(),meetingType,startLDT,endLDT);
+                    try {
+                        ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
+                        FXMLLoader loader=new FXMLLoader(getClass().getResource("Main.fxml"));
+                        Parent root = (Parent) loader.load();
+                        MainController mainController=loader.getController();
+                        mainController.setLoggedInUser(loggedInUser);
+                        Stage stage=new Stage();
+                        stage.setScene(new Scene(root));
+                        stage.show();
+                    }
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setHeaderText("Overlapping appointment");
+                    errorAlert.setContentText("Please check user's schedule to verify no scheduling conflicts.");
+                    errorAlert.showAndWait();
+                }
+            }
+            catch (NullPointerException e) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setContentText("Failed to find customer. Would you like to open customer management?");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK){
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CustomerManagement.fxml"));
+                    Parent     root       = (Parent) fxmlLoader.load();
+                    Stage      stage      = new Stage();
+                    stage.setTitle("Customer Management");
                     stage.setScene(new Scene(root));
                     stage.show();
                 }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            else {
-                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                errorAlert.setHeaderText("Unable to add appointment.");
-                errorAlert.setContentText("Please review all text fields and ensure no overlapping appointments .");
-                errorAlert.showAndWait();
             }
         }
-        catch (NullPointerException e) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setContentText("Failed to find customer. Would you like to open customer management?");
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK){
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CustomerManagement.fxml"));
-                Parent     root       = (Parent) fxmlLoader.load();
-                Stage      stage      = new Stage();
-                stage.setTitle("Customer Management");
-                stage.setScene(new Scene(root));
-                stage.show();
-            }
+        else {
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                errorAlert.setHeaderText("Invalid appointment input");
+                errorAlert.setContentText("Please verify all entered data.");
+                errorAlert.showAndWait();
         }
     }
     

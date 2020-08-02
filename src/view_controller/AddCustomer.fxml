@@ -45,7 +45,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="CustomerName" maxWidth="184.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" text="Rick" GridPane.columnIndex="1">
+            <TextField fx:id="CustomerName" maxWidth="184.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" GridPane.columnIndex="1">
                <font>
                   <Font size="14.0" />
                </font>
@@ -60,27 +60,27 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="PhoneNumber" maxWidth="160.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" text="(559)905-2242" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <TextField fx:id="PhoneNumber" maxWidth="160.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" promptText="XXX-XXX-XXXX" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <font>
                   <Font size="14.0" />
                </font>
             </TextField>
-            <TextField fx:id="Address" maxWidth="184.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" text="12342 Kelso" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <TextField fx:id="Address" maxWidth="184.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <font>
                   <Font size="14.0" />
                </font>
             </TextField>
-            <TextField fx:id="City" maxWidth="184.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" text="Fresno" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <TextField fx:id="City" maxWidth="184.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <font>
                   <Font size="14.0" />
                </font>
             </TextField>
-            <TextField fx:id="Zip" maxWidth="184.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" text="93722" GridPane.columnIndex="1" GridPane.rowIndex="4">
+            <TextField fx:id="Zip" maxWidth="184.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                <font>
                   <Font size="14.0" />
                </font>
             </TextField>
-            <TextField fx:id="Country" maxWidth="184.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" text="USA" GridPane.columnIndex="1" GridPane.rowIndex="5">
+            <TextField fx:id="Country" maxWidth="184.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
                <font>
                   <Font size="14.0" />
                </font>

@@ -45,7 +45,7 @@
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <TextField fx:id="ConsultantNameField" layoutX="405.0" layoutY="89.0" maxWidth="160.0" prefHeight="30.0" prefWidth="134.0" promptText="Name">
+      <TextField fx:id="ConsultantNameField" layoutX="405.0" layoutY="89.0" maxWidth="160.0" prefHeight="30.0" prefWidth="134.0" promptText="Consultant">
          <font>
             <Font size="14.0" />
          </font>

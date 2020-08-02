@@ -59,6 +59,9 @@ public class ModifyCustomerController implements Initializable {
             CustomerName.setText(customer.getCustomerName());
             PhoneNumber.setText(customer.getPhone());
             Address.setText(customer.getAddress());
+            City.setText(customer.getCity());
+            Zip.setText(customer.getZip());
+            Country.setText(customer.getCountry());
         }
         catch (Exception e) {
             System.out.println(e.getMessage() + " unable to import customer info :-(");
@@ -66,7 +69,14 @@ public class ModifyCustomerController implements Initializable {
     }
 
     @FXML
-    private void modifyCustomerCancelButtonPressed(ActionEvent event) {
+    private void modifyCustomerCancelButtonPressed(ActionEvent event) throws IOException {
+        ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();        
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CustomerManagement.fxml"));
+        Parent     root       = (Parent) fxmlLoader.load();
+        Stage      stage      = new Stage();
+        stage.setTitle("Customer Management");
+        stage.setScene(new Scene(root));
+        stage.show();
     }
 
     @FXML

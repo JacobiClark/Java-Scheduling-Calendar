@@ -82,7 +82,6 @@ public class SQLQuery {
             ps.setString(4, endUTC);
             ps.execute();        
             ResultSet rs = ps.getResultSet();
-            System.out.println("overlapping " +rs.next());
             return rs.next();
         }
         catch (SQLException e) {
@@ -452,7 +451,7 @@ public class SQLQuery {
             ps.execute();
         }
         catch (SQLException e) {
-            System.out.println(e.getMessage() + "unable to insert customer" );
+            System.out.println(e.getMessage() + "unable to modify appointment" );
         }
     }
     
@@ -466,7 +465,6 @@ public class SQLQuery {
             ps.setInt(2, addressId);
             ps.setInt(3, customerId);
             ps.execute();
-            System.out.println("done");
         }
         catch (SQLException e) {
             System.out.println(e.getMessage() + "unable to insert customer" );
@@ -488,6 +486,17 @@ public class SQLQuery {
     }
     
     public static void deleteCustomer(int customerId) throws SQLException {
+        try {
+            Connection conn = DBConnection.startConnection();
+            String deleteStatement = "DELETE FROM appointment WHERE customerId = ?";
+            Query.setPreparedStatement(conn, deleteStatement);
+            PreparedStatement ps = Query.getPreparedStatement();
+            ps.setInt(1, customerId);
+            ps.execute();          
+        }
+       catch (SQLException e) {
+            System.out.println(e.getMessage() + "unable delete appointments that reference customer being deleted." );
+        }
         try {
             Connection conn = DBConnection.startConnection();
             String deleteStatement = "DELETE FROM customer WHERE customerId = ?";

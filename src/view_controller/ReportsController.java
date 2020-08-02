@@ -150,6 +150,7 @@ public class ReportsController implements Initializable {
 
     @FXML
     private void ExitButtonPressed(ActionEvent event) {
+        ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
     }
 
     @FXML

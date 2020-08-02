@@ -44,7 +44,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="CustomerName" maxWidth="184.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" text="John Doe" GridPane.columnIndex="1">
+            <TextField fx:id="CustomerName" maxWidth="184.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" GridPane.columnIndex="1">
                <font>
                   <Font size="14.0" />
                </font>
@@ -54,7 +54,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="Date" maxWidth="184.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" promptText="YYYY-MM-DD " text="2020-08-05" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <TextField fx:id="Date" maxWidth="184.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" promptText="YYYY-MM-DD " GridPane.columnIndex="1" GridPane.rowIndex="1">
                <font>
                   <Font size="14.0" />
                </font>
@@ -64,7 +64,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="StartTime" maxWidth="160.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" promptText="HH:MM" text="12:20" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <TextField fx:id="StartTime" maxWidth="160.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" promptText="HH:MM" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <font>
                   <Font size="14.0" />
                </font>
@@ -74,7 +74,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="EndTime" maxWidth="160.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" promptText="HH:MM" text="12:40" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <TextField fx:id="EndTime" maxWidth="160.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" promptText="HH:MM" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <font>
                   <Font size="14.0" />
                </font>
@@ -84,7 +84,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="MeetingType" maxWidth="160.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" text="Scrum" GridPane.columnIndex="1" GridPane.rowIndex="4">
+            <TextField fx:id="MeetingType" maxWidth="160.0" minWidth="200.0" prefHeight="30.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                <font>
                   <Font size="14.0" />
                </font>
