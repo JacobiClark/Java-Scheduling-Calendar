@@ -1,4 +1,5 @@
 package SQL;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,6 +33,7 @@ import view_controller.MainController;
  * @author Jacobi
  */
 public class SQLQuery {
+
     public static Boolean authenticate(String userName, String password) throws SQLException {
         try {
             Connection conn = DBConnection.startConnection();
@@ -40,16 +42,15 @@ public class SQLQuery {
             PreparedStatement ps = Query.getPreparedStatement();
             ps.setString(1, userName);
             ps.setString(2, password);
-            ps.execute();        
+            ps.execute();
             ResultSet rs = ps.getResultSet();
             return rs.next();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
-    
+
     public static String convertUTCtoLocalDateTime(String UTC_DB_String) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime UTCLDT = LocalDateTime.parse(UTC_DB_String, dtf);
@@ -58,14 +59,14 @@ public class SQLQuery {
         LocalDateTime LDT = UTCZDT.withZoneSameInstant(ZoneId.of(zid.toString())).toLocalDateTime();
         return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LDT);
     }
-    
+
     public static String convertLocalDateTimeToUTCDateTime(LocalDateTime LDT) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         ZoneId zid = ZoneId.systemDefault();
         LocalDateTime UTC = LDT.atZone(zid).withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime();
-        return UTC.toString();        
+        return UTC.toString();
     }
-    
+
     public static Boolean checkIfOverlappingAppointments(int userId, LocalDateTime startLDT, LocalDateTime endLDT, int appointmentId) {
         try {
             //Returns true if no appointments are found that conflict with given user
@@ -80,17 +81,16 @@ public class SQLQuery {
             ps.setInt(2, appointmentId);
             ps.setString(3, startUTC);
             ps.setString(4, endUTC);
-            ps.execute();        
+            ps.execute();
             ResultSet rs = ps.getResultSet();
             return rs.next();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return true;
     }
-    
-    public static Boolean retrieveAppointmentsInFifteen(int userId) {      
+
+    public static Boolean retrieveAppointmentsInFifteen(int userId) {
         try {
             //Returns true if no appointments are found that conflict with given user
             Connection conn = DBConnection.startConnection();
@@ -99,17 +99,16 @@ public class SQLQuery {
             PreparedStatement ps = Query.getPreparedStatement();
             ps.setInt(1, userId);
             ps.setString(2, LocalDateTime.now(ZoneId.of("UTC")).toString());
-            ps.setString(3,LocalDateTime.now(ZoneId.of("UTC")).plusMinutes(15).toString());
-            ps.execute();        
-            ResultSet rs = ps.getResultSet();            
+            ps.setString(3, LocalDateTime.now(ZoneId.of("UTC")).plusMinutes(15).toString());
+            ps.execute();
+            ResultSet rs = ps.getResultSet();
             return rs.next();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return true;
     }
-    
+
     public static User createUser(String userName) throws SQLException {
         try {
             Connection conn = DBConnection.startConnection();
@@ -121,81 +120,78 @@ public class SQLQuery {
             ResultSet rs = ps.getResultSet();
             rs.next();
             User loggedInUser = new User(
-                rs.getInt("userId"),
-                rs.getString("userName"),
-                rs.getString("password"),
-                rs.getBoolean("active"),
-                rs.getTimestamp("createDate").toLocalDateTime(),
-                rs.getString("createdBy"),
-                rs.getTimestamp("lastUpdate").toLocalDateTime(),
-                rs.getString("lastUpdateBy")
+                    rs.getInt("userId"),
+                    rs.getString("userName"),
+                    rs.getString("password"),
+                    rs.getBoolean("active"),
+                    rs.getTimestamp("createDate").toLocalDateTime(),
+                    rs.getString("createdBy"),
+                    rs.getTimestamp("lastUpdate").toLocalDateTime(),
+                    rs.getString("lastUpdateBy")
             );
             return loggedInUser;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
     }
-    
-    public static ObservableList<User> retrieveAllUsers() throws SQLException{
+
+    public static ObservableList<User> retrieveAllUsers() throws SQLException {
         ObservableList<User> users = FXCollections.observableArrayList();
         try {
             Connection conn = DBConnection.startConnection();
             String selectStatement = "SELECT * FROM user";
             Query.setPreparedStatement(conn, selectStatement);
             PreparedStatement ps = Query.getPreparedStatement();
-            ps.execute();        
+            ps.execute();
             ResultSet rs = ps.getResultSet();
             while (rs.next()) {
                 User user = new User(
-                rs.getInt("userId"),
-                rs.getString("userName"),
-                rs.getString("password"),
-                rs.getBoolean("active"),
-                rs.getTimestamp("createDate").toLocalDateTime(),
-                rs.getString("createdBy"),
-                rs.getTimestamp("lastUpdate").toLocalDateTime(),
-                rs.getString("lastUpdateBy")
-            );
+                        rs.getInt("userId"),
+                        rs.getString("userName"),
+                        rs.getString("password"),
+                        rs.getBoolean("active"),
+                        rs.getTimestamp("createDate").toLocalDateTime(),
+                        rs.getString("createdBy"),
+                        rs.getTimestamp("lastUpdate").toLocalDateTime(),
+                        rs.getString("lastUpdateBy")
+                );
                 users.add(user);
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return users;
     }
-    
-    public static ObservableList<Customer> retrieveAllCustomers() throws SQLException{
+
+    public static ObservableList<Customer> retrieveAllCustomers() throws SQLException {
         ObservableList<Customer> customers = FXCollections.observableArrayList();
         try {
             Connection conn = DBConnection.startConnection();
             String selectStatement = "SELECT * FROM customer";
             Query.setPreparedStatement(conn, selectStatement);
             PreparedStatement ps = Query.getPreparedStatement();
-            ps.execute();        
+            ps.execute();
             ResultSet rs = ps.getResultSet();
             while (rs.next()) {
                 Customer customer = new Customer(
-                rs.getInt("customerId"),
-                rs.getString("customerName"),
-                "phone",
-                "address",
-                "city",
-                "postalCode",
-                "country"
-            );
-            customers.add(customer);
+                        rs.getInt("customerId"),
+                        rs.getString("customerName"),
+                        "phone",
+                        "address",
+                        "city",
+                        "postalCode",
+                        "country"
+                );
+                customers.add(customer);
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return customers;
     }
-    
-    public static ObservableList<Appointment> retrieveAllAppointments(int userId) throws SQLException{
+
+    public static ObservableList<Appointment> retrieveAllAppointments(int userId) throws SQLException {
         ObservableList<Appointment> appointments = FXCollections.observableArrayList();
         try {
             Connection conn = DBConnection.startConnection();
@@ -203,55 +199,54 @@ public class SQLQuery {
             Query.setPreparedStatement(conn, selectStatement);
             PreparedStatement ps = Query.getPreparedStatement();
             ps.setInt(1, userId);
-            ps.execute();        
+            ps.execute();
             ResultSet rs = ps.getResultSet();
             while (rs.next()) {
-                Appointment appointment  = new Appointment(
-                    rs.getInt("appointmentId"),
-                    rs.getInt("customerId"),
-                    rs.getInt("userId"),
-                    convertUTCtoLocalDateTime(rs.getString("start")),
-                    convertUTCtoLocalDateTime(rs.getString("end")),
-                    rs.getString("type"),
-                    rs.getString("customerName")                    
+                Appointment appointment = new Appointment(
+                        rs.getInt("appointmentId"),
+                        rs.getInt("customerId"),
+                        rs.getInt("userId"),
+                        convertUTCtoLocalDateTime(rs.getString("start")),
+                        convertUTCtoLocalDateTime(rs.getString("end")),
+                        rs.getString("type"),
+                        rs.getString("customerName")
                 );
                 appointments.add(appointment);
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return appointments;
     }
-    public static ObservableList<Customer> retrieveCustomers() throws SQLException{
+
+    public static ObservableList<Customer> retrieveCustomers() throws SQLException {
         ObservableList<Customer> customers = FXCollections.observableArrayList();
         try {
             Connection conn = DBConnection.startConnection();
             String selectStatement = "SELECT customerId, customerName, phone, address, city, postalCode, country FROM customer INNER JOIN address ON customer.addressId = address.addressId INNER JOIN city ON address.cityId = city.cityId INNER JOIN country on city.countryId = country.countryId ORDER By customerName ASC";
             Query.setPreparedStatement(conn, selectStatement);
             PreparedStatement ps = Query.getPreparedStatement();
-            ps.execute();        
+            ps.execute();
             ResultSet rs = ps.getResultSet();
             while (rs.next()) {
-                Customer customer  = new Customer(
-                    rs.getInt("customerId"),
-                    rs.getString("customerName"),
-                    rs.getString("phone"),
-                    rs.getString("address"),
-                    rs.getString("city"),
-                    rs.getString("postalCode"),
-                    rs.getString("country")
+                Customer customer = new Customer(
+                        rs.getInt("customerId"),
+                        rs.getString("customerName"),
+                        rs.getString("phone"),
+                        rs.getString("address"),
+                        rs.getString("city"),
+                        rs.getString("postalCode"),
+                        rs.getString("country")
                 );
                 customers.add(customer);
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return customers;
     }
 
-    public static ObservableList<Appointment> retrieveAppointments (LocalDateTime endTime, User loggedInUser) throws SQLException{
+    public static ObservableList<Appointment> retrieveAppointments(LocalDateTime endTime, User loggedInUser) throws SQLException {
         ObservableList<Appointment> loggedInUsersAppointments = FXCollections.observableArrayList();
         int userId = loggedInUser.getUserId();
         LocalDateTime now = LocalDateTime.now();
@@ -265,28 +260,27 @@ public class SQLQuery {
             ps.setInt(1, userId);
             ps.setTimestamp(2, Timestamp.valueOf(now));
             ps.setTimestamp(3, Timestamp.valueOf(endTime));
-            ps.execute();        
+            ps.execute();
             ResultSet rs = ps.getResultSet();
             while (rs.next()) {
-                Appointment appointment  = new Appointment(
-                    rs.getInt("appointmentId"),
-                    rs.getInt("customerId"),
-                    rs.getInt("userId"),
-                    convertUTCtoLocalDateTime(rs.getString("start")),
-                    convertUTCtoLocalDateTime(rs.getString("end")),
-                    rs.getString("type"),
-                    rs.getString("customerName")                    
+                Appointment appointment = new Appointment(
+                        rs.getInt("appointmentId"),
+                        rs.getInt("customerId"),
+                        rs.getInt("userId"),
+                        convertUTCtoLocalDateTime(rs.getString("start")),
+                        convertUTCtoLocalDateTime(rs.getString("end")),
+                        rs.getString("type"),
+                        rs.getString("customerName")
                 );
                 loggedInUsersAppointments.add(appointment);
             }
-        }
-        catch (SQLException e) {
-            System.out.println("failed to retrieve appointments" );
+        } catch (SQLException e) {
+            System.out.println("failed to retrieve appointments");
         }
         return loggedInUsersAppointments;
     }
-    
-    public static ObservableList<AppointmentTypeCount> retrieveAppointmentsFromMonth (LocalDateTime beginningOfMonthLDT, LocalDateTime endOfMonthLDT) throws SQLException{
+
+    public static ObservableList<AppointmentTypeCount> retrieveAppointmentsFromMonth(LocalDateTime beginningOfMonthLDT, LocalDateTime endOfMonthLDT) throws SQLException {
         ObservableList<AppointmentTypeCount> appointmentTypesByMonth = FXCollections.observableArrayList();
         try {
             Connection conn = DBConnection.startConnection();
@@ -299,15 +293,14 @@ public class SQLQuery {
             ps.execute();
             ResultSet rs = ps.getResultSet();
             while (rs.next()) {
-                AppointmentTypeCount appointmentTypeCount  = new AppointmentTypeCount(
-                    rs.getString("type"),
-                    rs.getInt("count")
+                AppointmentTypeCount appointmentTypeCount = new AppointmentTypeCount(
+                        rs.getString("type"),
+                        rs.getInt("count")
                 );
                 appointmentTypesByMonth.add(appointmentTypeCount);
             }
-        }
-        catch (SQLException e) {
-            System.out.println("failed to retrieve appointments" );
+        } catch (SQLException e) {
+            System.out.println("failed to retrieve appointments");
         }
         return appointmentTypesByMonth;
     }
@@ -326,13 +319,12 @@ public class SQLQuery {
             if (rs.next()) {
                 ID = rs.getInt("customerId");
             }
-        }
-        catch (SQLException e) {
-            System.out.println(e.getMessage() + " unable to get customer id" );
+        } catch (SQLException e) {
+            System.out.println(e.getMessage() + " unable to get customer id");
         }
         return ID;
     }
-    
+
     public static Integer retrieveUserId(String userName) throws SQLException {
         Integer ID = null;
         try {
@@ -347,16 +339,15 @@ public class SQLQuery {
             if (rs.next()) {
                 ID = rs.getInt("userId");
             }
-        }
-        catch (SQLException e) {
-            System.out.println(e.getMessage() + " unable to get user id" );
+        } catch (SQLException e) {
+            System.out.println(e.getMessage() + " unable to get user id");
         }
         return ID;
     }
-    
+
     public static int retrieveAddressId(String address, int cityId, String phone) throws SQLException {
         Integer addressId = null;
-        try {      
+        try {
             Connection conn = DBConnection.startConnection();
             String selectStatement = "SELECT addressId FROM address WHERE address = ? AND cityId = ? AND phone = ?";
             Query.setPreparedStatement(conn, selectStatement);
@@ -369,16 +360,15 @@ public class SQLQuery {
             if (rs.next()) {
                 addressId = rs.getInt("addressId");
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return addressId;
     }
-    
+
     public static int retrieveCountryId(String country) throws SQLException {
         Integer countryId = null;
-        try {      
+        try {
             Connection conn = DBConnection.startConnection();
             String selectStatement = "SELECT countryId FROM country WHERE country=?";
             Query.setPreparedStatement(conn, selectStatement);
@@ -389,16 +379,15 @@ public class SQLQuery {
             if (rs.next()) {
                 countryId = rs.getInt("countryId");
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return countryId;
     }
-    
+
     public static int retrieveCityId(String city, int countryId) throws SQLException {
         Integer cityId = null;
-        try {      
+        try {
             Connection conn = DBConnection.startConnection();
             String selectStatement = "SELECT cityId FROM city WHERE city=? AND countryId=?";
             Query.setPreparedStatement(conn, selectStatement);
@@ -411,13 +400,12 @@ public class SQLQuery {
             if (rs.next()) {
                 cityId = rs.getInt("cityId");
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return cityId;
     }
-    
+
     public static void insertAppointment(int customerId, int userId, String meetingType, LocalDateTime startTime, LocalDateTime endTime) throws SQLException {
         try {
             Connection conn = DBConnection.startConnection();
@@ -429,14 +417,12 @@ public class SQLQuery {
             ps.setString(3, meetingType);
             ps.setString(4, convertLocalDateTimeToUTCDateTime(startTime));
             ps.setString(5, convertLocalDateTimeToUTCDateTime(endTime));
-            ps.execute();          
-        }
-       catch (SQLException e) {
-            System.out.println(e.getMessage() + "unable to add appointment" );
+            ps.execute();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage() + "unable to add appointment");
         }
     }
-    
-    
+
     public static void modifyAppointment(int appointmentID, int customerId, LocalDateTime startTime, LocalDateTime endTime, String meetingType) {
         try {
             Connection conn = DBConnection.startConnection();
@@ -449,12 +435,11 @@ public class SQLQuery {
             ps.setString(4, meetingType);
             ps.setInt(5, appointmentID);
             ps.execute();
-        }
-        catch (SQLException e) {
-            System.out.println(e.getMessage() + "unable to modify appointment" );
+        } catch (SQLException e) {
+            System.out.println(e.getMessage() + "unable to modify appointment");
         }
     }
-    
+
     public static void modifyCustomer(int customerId, String customerName, int addressId) {
         try {
             Connection conn = DBConnection.startConnection();
@@ -465,12 +450,11 @@ public class SQLQuery {
             ps.setInt(2, addressId);
             ps.setInt(3, customerId);
             ps.execute();
-        }
-        catch (SQLException e) {
-            System.out.println(e.getMessage() + "unable to insert customer" );
+        } catch (SQLException e) {
+            System.out.println(e.getMessage() + "unable to insert customer");
         }
     }
-    
+
     public static void deleteAppointment(int appointmentId) throws SQLException {
         try {
             Connection conn = DBConnection.startConnection();
@@ -478,13 +462,12 @@ public class SQLQuery {
             Query.setPreparedStatement(conn, deleteStatement);
             PreparedStatement ps = Query.getPreparedStatement();
             ps.setInt(1, appointmentId);
-            ps.execute();          
-        }
-       catch (SQLException e) {
-            System.out.println(e.getMessage() + "unable to delete appointment" );
+            ps.execute();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage() + "unable to delete appointment");
         }
     }
-    
+
     public static void deleteCustomer(int customerId) throws SQLException {
         try {
             Connection conn = DBConnection.startConnection();
@@ -492,10 +475,9 @@ public class SQLQuery {
             Query.setPreparedStatement(conn, deleteStatement);
             PreparedStatement ps = Query.getPreparedStatement();
             ps.setInt(1, customerId);
-            ps.execute();          
-        }
-       catch (SQLException e) {
-            System.out.println(e.getMessage() + "unable delete appointments that reference customer being deleted." );
+            ps.execute();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage() + "unable delete appointments that reference customer being deleted.");
         }
         try {
             Connection conn = DBConnection.startConnection();
@@ -503,13 +485,12 @@ public class SQLQuery {
             Query.setPreparedStatement(conn, deleteStatement);
             PreparedStatement ps = Query.getPreparedStatement();
             ps.setInt(1, customerId);
-            ps.execute();          
-        }
-       catch (SQLException e) {
-            System.out.println(e.getMessage() + "unable to delete customer" );
+            ps.execute();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage() + "unable to delete customer");
         }
     }
-    
+
     public static void insertAddress(int cityId, String phone, String address, String postalCode) throws SQLException {
         try {
             Connection conn = DBConnection.startConnection();
@@ -521,12 +502,11 @@ public class SQLQuery {
             ps.setString(3, address);
             ps.setString(4, postalCode);
             ps.execute();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
-    
+
     public static void insertCity(String city, int countryId) throws SQLException {
         try {
             Connection conn = DBConnection.startConnection();
@@ -536,13 +516,11 @@ public class SQLQuery {
             ps.setString(1, city);
             ps.setInt(2, countryId);
             ps.execute();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
-    
-    
+
     public static void insertCountry(String country) throws SQLException {
         try {
             Connection conn = DBConnection.startConnection();
@@ -551,9 +529,8 @@ public class SQLQuery {
             PreparedStatement ps = Query.getPreparedStatement();
             ps.setString(1, country);
             ps.execute();
-        }
-        catch (SQLException e) {
-            System.out.println(e.getMessage() + "unable to add address" );
+        } catch (SQLException e) {
+            System.out.println(e.getMessage() + "unable to add address");
         }
     }
 
@@ -566,11 +543,9 @@ public class SQLQuery {
             ps.setString(1, customerName);
             ps.setInt(2, addressId);
             ps.execute();
-        }
-        catch (SQLException e) {
-            System.out.println(e.getMessage() + "unable to insert customer" );
+        } catch (SQLException e) {
+            System.out.println(e.getMessage() + "unable to insert customer");
         }
     }
-
 
 }

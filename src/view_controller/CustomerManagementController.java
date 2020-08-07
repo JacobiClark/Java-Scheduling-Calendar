@@ -94,6 +94,15 @@ public class CustomerManagementController implements Initializable {
             System.out.println(e.getMessage() + " unable to populate customers table");
         }
     }
+    
+    @FXML
+    //Lambda function that closes the current screen on click. Lambda function was used here due to the function only needing to
+    //be called once, so the problem of closing out of a window is easier though of in terms of an isolated function rather than object
+    //which a method is being called upon.
+    private void BackToCalendarButtonPressed(ActionEvent event) throws IOException {
+        WindowCloser closer = () -> ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
+        closer.closeWindow();
+    }
 
     @FXML
     public void DeleteCustomerButtonPressed(ActionEvent event) throws SQLException {
@@ -150,15 +159,9 @@ public class CustomerManagementController implements Initializable {
             e.printStackTrace();
         }
     }
-
-    @FXML
-    private void BackToCalendarButtonPressed(ActionEvent event) throws IOException {
-        WindowCloser closer = () -> ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
-        closer.closeWindow();
-    }
-
+    
+    //Lambda Interface
     interface WindowCloser {
-
         void closeWindow();
     }
 }

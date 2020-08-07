@@ -1,4 +1,4 @@
- /*
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -40,6 +40,7 @@ import utils.Query;
  * @author Jacobi
  */
 public class AddAppointmentController implements Initializable {
+
     private User loggedInUser;
     @FXML
     private Button AddAppointmentCancelButton;
@@ -62,72 +63,64 @@ public class AddAppointmentController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }    
+    }
 
     @FXML
     private void addAppointmentSaveButtonPressed(ActionEvent event) throws SQLException, IOException {
-        if(validateAppointmentClientSide(CustomerName.getText(), Date.getText(), StartTime.getText(), EndTime.getText(), MeetingType.getText())) {
+        if (validateAppointmentClientSide(CustomerName.getText(), Date.getText(), StartTime.getText(), EndTime.getText(), MeetingType.getText())) {
             //Generate data to insert into db
-            int customerId=0;
+            int customerId = 0;
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
             String customerName = CustomerName.getText();
             String date = Date.getText();
             String startTime = StartTime.getText();
             String endTime = EndTime.getText();
             String meetingType = MeetingType.getText();
-            String startString = date+" "+StartTime.getText()+":00.0";
-            String endString = date+" "+EndTime.getText()+":00.0";
+            String startString = date + " " + StartTime.getText() + ":00.0";
+            String endString = date + " " + EndTime.getText() + ":00.0";
             LocalDateTime startLDT = LocalDateTime.parse(startString, formatter);
             LocalDateTime endLDT = LocalDateTime.parse(endString, formatter);
             try {
                 customerId = SQLQuery.retrieveCustomerId(customerName);
-                if(!SQL.SQLQuery.checkIfOverlappingAppointments(loggedInUser.getUserId(), startLDT, endLDT, 0)) {
-                    SQLQuery.insertAppointment(customerId,loggedInUser.getUserId(),meetingType,startLDT,endLDT);
+                if (!SQL.SQLQuery.checkIfOverlappingAppointments(loggedInUser.getUserId(), startLDT, endLDT, 0)) {
+                    SQLQuery.insertAppointment(customerId, loggedInUser.getUserId(), meetingType, startLDT, endLDT);
                     try {
                         ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
-                        FXMLLoader loader=new FXMLLoader(getClass().getResource("Main.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("Main.fxml"));
                         Parent root = (Parent) loader.load();
-                        MainController mainController=loader.getController();
+                        MainController mainController = loader.getController();
                         mainController.setLoggedInUser(loggedInUser);
-                        Stage stage=new Stage();
+                        Stage stage = new Stage();
                         stage.setScene(new Scene(root));
                         stage.show();
-                    }
-                    catch (IOException e) {
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }
-                else {
+                } else {
                     Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                     errorAlert.setHeaderText("Overlapping appointment");
                     errorAlert.setContentText("Please check user's schedule to verify no scheduling conflicts.");
                     errorAlert.showAndWait();
                 }
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setContentText("Failed to find customer. Would you like to open customer management?");
                 Optional<ButtonType> result = alert.showAndWait();
-                if (result.get() == ButtonType.OK){
+                if (result.get() == ButtonType.OK) {
                     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CustomerManagement.fxml"));
-                    Parent     root       = (Parent) fxmlLoader.load();
-                    Stage      stage      = new Stage();
+                    Parent root = (Parent) fxmlLoader.load();
+                    Stage stage = new Stage();
                     stage.setTitle("Customer Management");
                     stage.setScene(new Scene(root));
                     stage.show();
                 }
             }
-        }
-        else {
+        } else {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                errorAlert.setHeaderText("Invalid appointment input");
-                errorAlert.setContentText("Please verify all entered data.");
-                errorAlert.showAndWait();
+            errorAlert.setHeaderText("Invalid appointment input");
+            errorAlert.setContentText("Please verify all entered data.");
+            errorAlert.showAndWait();
         }
-    }
-    
-    private static boolean validateAppointmentClientSide(String customerName, String date, String startTime, String endTime, String meetingType) {
-        return (isStringValid(customerName) && isDateValid(date) && areTimesValid(startTime, endTime) && isStringValid(meetingType));
     }
 
     public void addAppointmentCancelButtonPressed(ActionEvent event) throws IOException, SQLException {
@@ -135,48 +128,50 @@ public class AddAppointmentController implements Initializable {
         alert.setTitle("Cancel Add Appointment");
         alert.setContentText("Are you sure you want to cancel adding this Appointment?");
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
+        if (result.get() == ButtonType.OK) {
             ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
-            FXMLLoader loader=new FXMLLoader(getClass().getResource("Main.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("Main.fxml"));
             Parent root = (Parent) loader.load();
-            MainController mainController=loader.getController();
+            MainController mainController = loader.getController();
             mainController.setLoggedInUser(loggedInUser);
-            Stage stage=new Stage();
+            Stage stage = new Stage();
             stage.setScene(new Scene(root));
             stage.show();
         }
     }
-    
+
+    private static boolean validateAppointmentClientSide(String customerName, String date, String startTime, String endTime, String meetingType) {
+        return (isStringValid(customerName) && isDateValid(date) && areTimesValid(startTime, endTime) && isStringValid(meetingType));
+    }
+
     public void setUser(User user) {
         loggedInUser = user;
     }
-    
+
     private static boolean isStringValid(String str) {
         return (!str.isEmpty()
                 && str.matches("^[\\p{L} .'-]+$"));
     }
-    
+
     private static boolean isDateValid(String str) {
         return (!str.isEmpty()
                 && str.matches("^\\d{4}-\\d{2}-\\d{2}$"));
     }
-    
+
     private static boolean areTimesValid(String startTime, String endTime) {
         try {
-            LocalTime startOfDay = LocalTime.of(8,00);
-            LocalTime endOfDay = LocalTime.of(17,00);
+            LocalTime startOfDay = LocalTime.of(8, 00);
+            LocalTime endOfDay = LocalTime.of(17, 00);
             DateTimeFormatter tf = DateTimeFormatter.ofPattern("HH:mm");
             LocalTime startLocalTime = LocalTime.parse(startTime, tf);
             LocalTime endLocalTime = LocalTime.parse(endTime, tf);
-            return(startLocalTime.compareTo(endLocalTime)<0
-                    && startLocalTime.compareTo(startOfDay)>0
-                    && endLocalTime.compareTo(endOfDay)<0);
+            return (startLocalTime.compareTo(endLocalTime) < 0
+                    && startLocalTime.compareTo(startOfDay) > 0
+                    && endLocalTime.compareTo(endOfDay) < 0);
 
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return false;
     }
-    
 }

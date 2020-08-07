@@ -16,6 +16,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -27,6 +28,7 @@ import model.Customer;
  * @author Jacobi
  */
 public class ModifyCustomerController implements Initializable {
+
     private Customer customerToBeModified;
     @FXML
     private Button ModifyCustomerCancelButton;
@@ -52,7 +54,7 @@ public class ModifyCustomerController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
     }
-    
+
     public void setCustomerToBeModified(Customer customer) {
         try {
             customerToBeModified = customer;
@@ -62,18 +64,17 @@ public class ModifyCustomerController implements Initializable {
             City.setText(customer.getCity());
             Zip.setText(customer.getZip());
             Country.setText(customer.getCountry());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage() + " unable to import customer info :-(");
         }
     }
 
     @FXML
     private void modifyCustomerCancelButtonPressed(ActionEvent event) throws IOException {
-        ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();        
+        ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CustomerManagement.fxml"));
-        Parent     root       = (Parent) fxmlLoader.load();
-        Stage      stage      = new Stage();
+        Parent root = (Parent) fxmlLoader.load();
+        Stage stage = new Stage();
         stage.setTitle("Customer Management");
         stage.setScene(new Scene(root));
         stage.show();
@@ -87,26 +88,46 @@ public class ModifyCustomerController implements Initializable {
         String city = City.getText();
         String zip = Zip.getText();
         String country = Country.getText();
-        SQL.SQLQuery.insertCountry(country);
-        int countryId = SQL.SQLQuery.retrieveCountryId(country);
-        SQL.SQLQuery.insertCity(city, countryId);
-        int cityId = SQL.SQLQuery.retrieveCityId(city, countryId);
-        SQL.SQLQuery.insertAddress(cityId, phone, address, zip);
-        int addressId = SQL.SQLQuery.retrieveAddressId(address, cityId, phone);
-        //Insert new address and generate addrssId Primary key
-        SQL.SQLQuery.modifyCustomer(customerToBeModified.getCustomerId(), customerName, addressId);
-        try {
-            ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
-            FXMLLoader loader=new FXMLLoader(getClass().getResource("CustomerManagement.fxml"));
-            Parent root = (Parent) loader.load();
-            Stage stage=new Stage();
-            stage.setTitle("CustomerManagement");
-            stage.setScene(new Scene(root));
-            stage.show();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
+        if (validateCustomerFields(customerName, phone, address, city, zip, country)) {
+            SQL.SQLQuery.insertCountry(country);
+            int countryId = SQL.SQLQuery.retrieveCountryId(country);
+            SQL.SQLQuery.insertCity(city, countryId);
+            int cityId = SQL.SQLQuery.retrieveCityId(city, countryId);
+            SQL.SQLQuery.insertAddress(cityId, phone, address, zip);
+            int addressId = SQL.SQLQuery.retrieveAddressId(address, cityId, phone);
+            //Insert new address and generate addrssId Primary key
+            SQL.SQLQuery.modifyCustomer(customerToBeModified.getCustomerId(), customerName, addressId);
+            try {
+                ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("CustomerManagement.fxml"));
+                Parent root = (Parent) loader.load();
+                Stage stage = new Stage();
+                stage.setTitle("CustomerManagement");
+                stage.setScene(new Scene(root));
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setHeaderText("Invalid customer input");
+            errorAlert.setContentText("Please verify all entered data.");
+            errorAlert.showAndWait();
         }
     }
-    
+
+    private static boolean validateCustomerFields(String customerName, String PhoneNumber, String Address, String City, String Zip, String Country) {
+        return (isStringValid(customerName) && isPhoneNumberValid(PhoneNumber) && isStringValid(Address) && isStringValid(City) && isStringValid(Zip) && isStringValid(Country));
+    }
+
+    private static boolean isStringValid(String str) {
+        return (!str.isEmpty()
+                && str.matches("^[#.0-9a-zA-Z\\s,-]+$"));
+    }
+
+    private static boolean isPhoneNumberValid(String str) {
+        return (!str.isEmpty()
+                && str.matches("^\\d{3}-\\d{3}-\\d{4}$"));
+    }
+
 }

@@ -25,7 +25,9 @@ import utils.Query;
  * @author carolyn.sher
  */
 public class Main extends Application {
+
     static Stage stage;
+
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/view_controller/LogIn.fxml"));
@@ -37,10 +39,10 @@ public class Main extends Application {
     public static Stage getStage() {
         return stage;
     }
-    
+
     public static void main(String[] args) throws SQLException {
         launch(args);
         DBConnection.closeConnection();
     }
-    
+
 }

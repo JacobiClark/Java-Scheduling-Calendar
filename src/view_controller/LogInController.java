@@ -38,12 +38,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import utils.DBConnection;
@@ -57,7 +59,9 @@ import view_controller.MainController;
  * @author Jacobi
  */
 public class LogInController implements Initializable {
-
+    
+    @FXML
+    private Label ProjectNameLabel;
     @FXML
     private TextField userNameField;
     @FXML
@@ -69,7 +73,6 @@ public class LogInController implements Initializable {
     Locale locale = Locale.getDefault();
     String systemLanguage = locale.getDisplayLanguage();
 
-
     @FXML
     private void logInButtonPushed(ActionEvent event) throws SQLException, IOException {
         String userName = userNameField.getText();
@@ -78,27 +81,24 @@ public class LogInController implements Initializable {
             User loggedInUser = SQLQuery.createUser(userName);
             String logUser = loggedInUser.getUserName() + " logged in at " + LocalDateTime.now() + "\n";
             BufferedWriter writer = new BufferedWriter(
-                new FileWriter("src/data/logs.txt", true)  //Set true for append mode
-            );  
+                    new FileWriter("src/data/logs.txt", true) //Set true for append mode
+            );
             writer.write(logUser);
             writer.close();
 
-
-
             try {
                 ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
-                FXMLLoader loader=new FXMLLoader(getClass().getResource("Main.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("Main.fxml"));
                 Parent root = (Parent) loader.load();
-                MainController mainController=loader.getController();
+                MainController mainController = loader.getController();
                 mainController.setLoggedInUser(loggedInUser);
-                Stage stage=new Stage();
+                Stage stage = new Stage();
                 stage.setScene(new Scene(root));
                 stage.show();
                 if (SQL.SQLQuery.retrieveAppointmentsInFifteen(loggedInUser.getUserId())) {
                     mainController.alertIfAppointmentInFifteen();
                 }
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
@@ -113,24 +113,31 @@ public class LogInController implements Initializable {
     }
 
     public void autoLogIn() {
-            userNameField.setText("test");
-            passwordField.setText("test");
-        }
+        userNameField.setText("test");
+        passwordField.setText("test");
+    }
+
     /**
      * Initializes the controller class.
      */
     @Override
 
     public void initialize(URL url, ResourceBundle rb) {
-        if (systemLanguage.equals("French")) {
-            userNameField.setText("Nom d'utilisateur");
-            passwordField.setText("mot de passe");
+        try {
+            ProjectNameLabel.setAlignment(Pos.CENTER);
+            System.out.println(Locale.getDefault());
+            rb = ResourceBundle.getBundle("Languages/Language", Locale.getDefault());
+            if (Locale.getDefault().getLanguage().equals("de") || Locale.getDefault().getLanguage().equals("fr")) {
+                ProjectNameLabel.setText(rb.getString("projectNameText"));
+                userNameField.setPromptText(rb.getString("username"));
+                passwordField.setPromptText(rb.getString("password"));
+                invalidCredentialsHeaderText = rb.getString("invalidCredentialsHeaderText");
+                invalidCredentialsContentText = rb.getString("invalidCredentialsContentText");
+                       
+                
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
-        if (systemLanguage.equals("German")) {
-            userNameField.setText("Nutzername");
-            passwordField.setText("Passwor");
-        }
-        autoLogIn();
-    }   
-    
+    }
 }

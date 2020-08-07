@@ -23,7 +23,7 @@
             <Font size="14.0" />
          </font>
       </Button>
-      <Label layoutX="249.0" layoutY="34.0" text="SCHEDULER">
+      <Label fx:id="ProjectNameLabel" layoutX="112.0" layoutY="36.0" prefHeight="27.0" prefWidth="376.0" text="SCHEDULER" textAlignment="CENTER" textOverrun="CLIP">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>

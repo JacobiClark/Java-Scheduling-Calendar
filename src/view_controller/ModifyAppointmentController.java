@@ -34,6 +34,7 @@ import model.User;
  * @author Jacobi
  */
 public class ModifyAppointmentController implements Initializable {
+
     private User loggedInUser;
     private Appointment appointmentToBeModified;
     @FXML
@@ -58,7 +59,7 @@ public class ModifyAppointmentController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
     }
-    
+
     public void setAppointmentToBeModified(Appointment appointment) {
         try {
             appointmentToBeModified = appointment;
@@ -67,13 +68,12 @@ public class ModifyAppointmentController implements Initializable {
             StartTime.setText(appointmentToBeModified.getStartTime().toString());
             EndTime.setText(appointmentToBeModified.getEndTime().toString());
             MeetingType.setText(appointmentToBeModified.getMeetingType());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage() + " unable to import appointment info :-(");
         }
 
     }
-    
+
     public void setUser(User user) {
         loggedInUser = user;
     }
@@ -81,45 +81,46 @@ public class ModifyAppointmentController implements Initializable {
     @FXML
     private void addAppointmentCancelButtonPressed(ActionEvent event) throws IOException, SQLException {
         ((Stage) (((Button) event.getSource()).getScene().getWindow())).close();
-        FXMLLoader loader=new FXMLLoader(getClass().getResource("Main.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Main.fxml"));
         Parent root = (Parent) loader.load();
-        MainController mainController=loader.getController();
+        MainController mainController = loader.getController();
         mainController.setLoggedInUser(loggedInUser);
-        Stage stage=new Stage();
+        Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.show();
     }
+
     private static boolean validateAppointmentClientSide(String customerName, String date, String startTime, String endTime, String meetingType) {
         return (isStringValid(customerName) && isDateValid(date) && areTimesValid(startTime, endTime) && isStringValid(meetingType));
     }
-    
+
     private static boolean isStringValid(String str) {
         return (!str.isEmpty()
                 && str.matches("^[\\p{L} .'-]+$"));
     }
-    
+
     private static boolean isDateValid(String str) {
         return (!str.isEmpty()
                 && str.matches("^\\d{4}-\\d{2}-\\d{2}$"));
     }
-    
+
     private static boolean areTimesValid(String startTime, String endTime) {
         try {
-            LocalTime startOfDay = LocalTime.of(8,00);
-            LocalTime endOfDay = LocalTime.of(17,00);
+            LocalTime startOfDay = LocalTime.of(8, 00);
+            LocalTime endOfDay = LocalTime.of(17, 00);
             DateTimeFormatter tf = DateTimeFormatter.ofPattern("HH:mm");
             LocalTime startLocalTime = LocalTime.parse(startTime, tf);
             LocalTime endLocalTime = LocalTime.parse(endTime, tf);
-            return(startLocalTime.compareTo(endLocalTime)<0
-                    && startLocalTime.compareTo(startOfDay)>0
-                    && endLocalTime.compareTo(endOfDay)<0);
+            return (startLocalTime.compareTo(endLocalTime) < 0
+                    && startLocalTime.compareTo(startOfDay) > 0
+                    && endLocalTime.compareTo(endOfDay) < 0);
 
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return false;
     }
+
     @FXML
     private void modifyAppointmentSaveButtonPressed(ActionEvent event) throws SQLException, IOException {
         if (validateAppointmentClientSide(CustomerName.getText(), Date.getText(), StartTime.getText(), EndTime.getText(), MeetingType.getText())) {
