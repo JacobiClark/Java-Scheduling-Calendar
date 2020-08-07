@@ -125,16 +125,13 @@ public class LogInController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         try {
             ProjectNameLabel.setAlignment(Pos.CENTER);
-            System.out.println(Locale.getDefault());
-            rb = ResourceBundle.getBundle("Languages/Language", Locale.getDefault());
             if (Locale.getDefault().getLanguage().equals("de") || Locale.getDefault().getLanguage().equals("fr")) {
+                rb = ResourceBundle.getBundle("Languages/Language", Locale.getDefault());
                 ProjectNameLabel.setText(rb.getString("projectNameText"));
                 userNameField.setPromptText(rb.getString("username"));
                 passwordField.setPromptText(rb.getString("password"));
                 invalidCredentialsHeaderText = rb.getString("invalidCredentialsHeaderText");
                 invalidCredentialsContentText = rb.getString("invalidCredentialsContentText");
-                       
-                
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
