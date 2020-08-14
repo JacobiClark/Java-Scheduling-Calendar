@@ -250,7 +250,6 @@ public class SQLQuery {
         ObservableList<Appointment> loggedInUsersAppointments = FXCollections.observableArrayList();
         int userId = loggedInUser.getUserId();
         LocalDateTime now = LocalDateTime.now();
-        System.out.println(now);
         try {
             Connection conn = DBConnection.startConnection();
             String selectStatement = "SELECT * FROM user JOIN appointment ON user.userId = appointment.userId INNER JOIN customer ON appointment.customerId = customer.customerId WHERE user.userId=? AND appointment.end between ? and ? ORDER BY start ASC";
